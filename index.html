@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Avançado de Aposentadoria & Independência Financeira</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .tab-active {
+            border-bottom: 3px solid #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 text-white py-6 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">Simulador de Independência Financeira</h1>
+                <p class="text-slate-400 text-sm">Planejamento Real de Acumulação e Vivendo de Renda Passiva</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="bg-emerald-600/30 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Salvo no Navegador
+                </span>
+                <button type="button" onclick="clearSavedSettings()" title="Restaurar padrões" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">
+                    Resetar
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 flex gap-8">
+            <button id="btnTab1" onclick="switchTab(1)" class="py-4 px-2 tab-active transition-all flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                1. Fase de Acumulação (Construção)
+            </button>
+            <button id="btnTab2" onclick="switchTab(2)" class="py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                2. Fase de Usufruto (Vivendo de Renda)
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- TAB 1: ACUMULAÇÃO -->
+        <div id="tab1Content" class="space-y-8">
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                <!-- Input Form Panel -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-3 flex items-center justify-between">
+                        <span>Parâmetros de Entrada</span>
+                        <span class="text-xs font-normal text-slate-500">Valores Atuais</span>
+                    </h2>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Renda Passiva Mensal Desejada (Valores de Hoje)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-medium">R$</span>
+                            <input type="number" id="desiredIncome" value="5000" step="500" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 font-semibold" oninput="calculateAccumulation()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Patrimônio Inicial Já Acumulado</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-medium">R$</span>
+                            <input type="number" id="initialCap" value="10000" step="1000" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Prazo de Acumulação (Anos)</label>
+                        <input type="number" id="years" value="20" min="1" max="50" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Rendimento Bruto (% a.a.)</label>
+                            <input type="number" id="nomRate" value="10.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Inflação Estimada (% a.a.)</label>
+                            <input type="number" id="inflationRate" value="4.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Imposto de Renda (%)</label>
+                            <input type="number" id="taxRate" value="15.0" step="0.5" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Incremento Anual Aportes (%)</label>
+                            <input type="number" id="incRate" value="4.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-between gap-2">
+                        <div class="text-xs text-blue-800">
+                            <strong>Sugestão:</strong> Reajuste os aportes pela inflação para manter o esforço real constante.
+                        </div>
+                        <button type="button" onclick="useSuggestedIncrement()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-2 py-1 rounded transition">
+                            Copiar Inflação
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Indicator Cards & Tables -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-blue-600 text-white p-5 rounded-2xl shadow-sm">
+                            <span class="text-xs font-medium uppercase tracking-wider text-blue-200">Aporte Mensal Inicial (Ano 1)</span>
+                            <div class="text-3xl font-extrabold mt-1" id="cardPmt1">R$ 0,00</div>
+                            <p class="text-xs text-blue-100 mt-2" id="cardPmtDesc">Reajustado anualmente para cobrir a inflação.</p>
+                        </div>
+
+                        <div class="bg-emerald-600 text-white p-5 rounded-2xl shadow-sm">
+                            <span class="text-xs font-medium uppercase tracking-wider text-emerald-200">Saldo Obtido ao Final (Banco)</span>
+                            <div class="text-3xl font-extrabold mt-1" id="cardTargetNominal">R$ 0,00</div>
+                            <p class="text-xs text-emerald-100 mt-2">Equivale a <strong id="cardTargetReal">R$ 0,00</strong> em poder de compra de hoje.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Detalhamento das Taxas de Juros</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-slate-100 text-slate-600 text-xs uppercase font-semibold">
+                                    <tr>
+                                        <th class="py-2 px-3">Métrica</th>
+                                        <th class="py-2 px-3">Taxa Anual (a.a.)</th>
+                                        <th class="py-2 px-3">Taxa Mensal (a.m.)</th>
+                                        <th class="py-2 px-3">Significado Didático</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700 text-xs">
+                                    <tr>
+                                        <td class="py-2 px-3 font-semibold text-slate-900">Rendimento Bruto</td>
+                                        <td class="py-2 px-3" id="rateNomBrutaAA">10,00%</td>
+                                        <td class="py-2 px-3" id="rateNomBrutaAM">0,80%</td>
+                                        <td class="py-2 px-3 text-slate-500">Taxa contratada do investimento</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 font-semibold text-slate-900">Rendimento Líquido (s/ IR)</td>
+                                        <td class="py-2 px-3" id="rateNomLiqAA">8,50%</td>
+                                        <td class="py-2 px-3" id="rateNomLiqAM">0,68%</td>
+                                        <td class="py-2 px-3 text-slate-500">O que realmente entra no seu saldo</td>
+                                    </tr>
+                                    <tr class="bg-blue-50/50 font-medium">
+                                        <td class="py-2 px-3 font-bold text-blue-900">Rendimento Real (Ganho Acima da Inflação)</td>
+                                        <td class="py-2 px-3 font-bold text-blue-900" id="rateRealAA">4,33%</td>
+                                        <td class="py-2 px-3 font-bold text-blue-900" id="rateRealAM">0,35%</td>
+                                        <td class="py-2 px-3 text-blue-800">Crescimento efetivo do seu Poder de Compra</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-amber-900 text-sm space-y-2">
+                        <div class="font-bold flex items-center gap-2 text-amber-950">
+                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Integração Direta com a Aba 2
+                        </div>
+                        <p class="text-xs text-amber-900/90">
+                            O saldo acumulado de <strong id="expYears">20</strong> anos de investimento é sincronizado com as taxas de rendimento para simular o usufruto na Aba 2 sem divergências.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Visual Chart -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-900 mb-4">Evolução do Patrimônio ao Longo do Tempo</h3>
+                <div class="h-80">
+                    <canvas id="accumulationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Year-by-Year Table -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-slate-900">Tabela Didática de Evolução Anual</h3>
+                    <p class="text-xs text-slate-500">Crescimento do saldo nominal (banco) vs. saldo real (poder de compra).</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold border-b">
+                                <th class="py-3 px-3">Ano</th>
+                                <th class="py-3 px-3">Aporte Mensal (Nominal)</th>
+                                <th class="py-3 px-3">Aporte Mensal (Real)</th>
+                                <th class="py-3 px-3">Total Investido</th>
+                                <th class="py-3 px-3">Juros Acumulados</th>
+                                <th class="py-3 px-3">Saldo Nominal (Banco)</th>
+                                <th class="py-3 px-3 bg-blue-50 text-blue-900">Saldo Real (Poder de Compra)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accumulationTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- TAB 2: USUFRUTO & RETIRADAS -->
+        <div id="tab2Content" class="space-y-8 hidden">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Tab 2 Input Form -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-3 flex items-center justify-between">
+                        <span>Configurar Retirada Mensal</span>
+                        <span class="text-xs font-normal text-slate-500">Valores de Hoje</span>
+                    </h2>
+
+                    <div id="syncBadge" class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-center justify-between">
+                        <div>
+                            <span class="font-bold block"> Patrimônio Sincronizado da Aba 1:</span>
+                            <span id="syncValuesText">R$ 0,00 (Real) / R$ 0,00 (Nominal)</span>
+                        </div>
+                        <button type="button" onclick="syncFromTab1()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-2 py-1 rounded transition">
+                            Re-sincronizar
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Patrimônio Inicial de Usufruto (Poder de Compra Atual)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-medium">R$</span>
+                            <input type="number" id="tab2Cap" value="0" step="50000" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 font-semibold" oninput="calculateRetirement()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Rendimento Bruto da Carteira (% a.a.)</label>
+                        <input type="number" id="tab2NomRate" value="10.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 font-semibold" oninput="calculateRetirement()">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Inflação (% a.a.)</label>
+                            <input type="number" id="tab2InflationRate" value="4.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateRetirement()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Imposto de Renda (%)</label>
+                            <input type="number" id="tab2TaxRate" value="15.0" step="0.5" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateRetirement()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Retirada Mensal Desejada (R$ em Poder de Compra)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-medium">R$</span>
+                            <input type="number" id="tab2Withdrawal" value="5000" step="200" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 font-bold text-blue-600" oninput="calculateRetirement()">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Estratégias Rápidas de Retirada</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick="setPresetWithdrawal('perpetual')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium py-2 px-2 rounded-lg border border-slate-300 text-center">
+                                ♾️ 100% Renda Perpétua
+                            </button>
+                            <button type="button" onclick="setPresetWithdrawal('rule4p')" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-900 font-semibold py-2 px-2 rounded-lg border border-purple-300 text-center">
+                                🎯 Regra dos 4% (Trinity)
+                            </button>
+                            <button type="button" onclick="setPresetWithdrawal('growth')" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-medium py-2 px-2 rounded-lg border border-emerald-300 text-center">
+                                📈 Crescimento (+20% Reapl.)
+                            </button>
+                            <button type="button" onclick="setPresetWithdrawal('depletion')" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-800 font-medium py-2 px-2 rounded-lg border border-rose-300 text-center">
+                                📉 Consumo (+25% Retirada)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Horizonte de Simulação (Anos)</label>
+                        <input type="number" id="tab2Horizon" value="30" min="5" max="60" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateRetirement()">
+                    </div>
+
+                </div>
+
+                <!-- Tab 2 Status & Dynamic Analysis -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <div id="statusCardContainer" class="bg-emerald-600 text-white p-6 rounded-2xl shadow-sm transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-200" id="statusCardTag">Estratégia Sustentável</span>
+                            <span class="bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-medium" id="statusBadge">Renda Perpétua</span>
+                        </div>
+                        <div class="text-3xl font-extrabold mt-2" id="statusCardTitle">Patrimônio Preservado Indefinidamente</div>
+                        <p class="text-xs text-emerald-100 mt-2" id="statusCardDesc">Você está sacando exatamente os juros reais gerados pelo seu patrimônio.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Juros Reais Gerados/Mês</span>
+                            <div class="text-xl font-bold text-slate-900 mt-1" id="cardMonthlyRealInterest">R$ 0,00</div>
+                            <p class="text-xs text-slate-400 mt-1">Rendimento acima da inflação</p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Retirada Solicitada/Mês</span>
+                            <div class="text-xl font-bold text-blue-600 mt-1" id="cardMonthlyWithdrawal">R$ 0,00</div>
+                            <p class="text-xs text-slate-400 mt-1">Poder de compra mensal</p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Sobra / Reaplicação Mensal</span>
+                            <div class="text-xl font-bold mt-1" id="cardMonthlyNetFlow">R$ 0,00</div>
+                            <p class="text-xs text-slate-400 mt-1" id="cardMonthlyNetFlowLabel">Incorporado ao capital real</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 border border-slate-200 rounded-2xl p-5 text-slate-700 text-xs space-y-2">
+                        <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M12 7h.01"></path></svg>
+                            Validação dos Cálculos
+                        </div>
+                        <p><strong>Renda Perpétua:</strong> Quando a retirada é exatamente igual aos juros reais do patrimônio, o poder de compra permanece constante sem nunca esgotar o capital.</p>
+                        <p><strong>Alinhamento de Taxas:</strong> Garantir que a taxa da Aba 1 e da Aba 2 sejam idênticas é essencial para que a simulação de aposentadoria seja exata.</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Projection Chart with Horizon Filters -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Projeção Dinâmica do Patrimônio na Aposentadoria</h3>
+                        <p class="text-xs text-slate-500">Comparação visual entre o Cenário Selecionado vs. Renda Perpétua vs. Efeito Inflacionário Nominal.</p>
+                    </div>
+                    <!-- Time Horizon Buttons for Chart -->
+                    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-medium">
+                        <button type="button" onclick="setChartFilter(5)" id="btnFilter5" class="px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600">5 Anos</button>
+                        <button type="button" onclick="setChartFilter(10)" id="btnFilter10" class="px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600">10 Anos</button>
+                        <button type="button" onclick="setChartFilter(15)" id="btnFilter15" class="px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600">15 Anos</button>
+                        <button type="button" onclick="setChartFilter('max')" id="btnFilterMax" class="px-3 py-1.5 rounded-lg transition bg-white text-blue-600 shadow-sm font-bold">Máximo</button>
+                    </div>
+                </div>
+                <div class="h-80">
+                    <canvas id="retirementChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Year-by-Year Withdrawal Table -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-slate-900">Tabela Didática de Evolução do Usufruto</h3>
+                    <p class="text-xs text-slate-500">Detalhes dos juros gerados, retiradas mensais/anuais e saldo remanescente.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold border-b">
+                                <th class="py-3 px-3">Ano</th>
+                                <th class="py-3 px-3">Saldo Inicial Real</th>
+                                <th class="py-3 px-3">Juros Reais Gerados</th>
+                                <th class="py-3 px-3 bg-blue-50/80 text-blue-900">Retirada Mensal (Real e Nominal)</th>
+                                <th class="py-3 px-3 text-blue-900">Retirada Anual (Real)</th>
+                                <th class="py-3 px-3">Sobras / Déficit (Real)</th>
+                                <th class="py-3 px-3 bg-emerald-50 text-emerald-900">Saldo Final Real</th>
+                                <th class="py-3 px-3 font-bold text-blue-900">Saldo Final Nominal (Banco)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="retirementTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        const STORAGE_KEY = 'simulador_aposentadoria_config_v3';
+
+        let accumChartInstance = null;
+        let retChartInstance = null;
+        let currentCalculations = {};
+
+        // Stores full raw data for Aba 2 chart filtering
+        let currentRetData = { labels: [], selectedReal: [], perpetualReal: [], nominalBank: [] };
+        let activeChartFilter = 'max';
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+        }
+
+        function formatPercent(val) {
+            return (val * 100).toFixed(2).replace('.', ',') + '%';
+        }
+
+        function saveToLocalStorage() {
+            const inputsToSave = [
+                'desiredIncome', 'initialCap', 'years', 'nomRate', 
+                'inflationRate', 'taxRate', 'incRate', 'tab2Cap', 
+                'tab2NomRate', 'tab2InflationRate', 'tab2TaxRate',
+                'tab2Withdrawal', 'tab2Horizon'
+            ];
+            const data = {};
+            inputsToSave.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) data[id] = el.value;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return false;
+            try {
+                const data = JSON.parse(saved);
+                for (const [id, val] of Object.entries(data)) {
+                    const el = document.getElementById(id);
+                    if (el && val !== undefined && val !== null) {
+                        el.value = val;
+                    }
+                }
+                return true;
+            } catch (e) {
+                console.error("Erro ao carregar dados salvos:", e);
+                return false;
+            }
+        }
+
+        function clearSavedSettings() {
+            if (confirm("Deseja restaurar todas as configurações para os valores padrões originais?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
+        function useSuggestedIncrement() {
+            const inflationVal = document.getElementById('inflationRate').value;
+            document.getElementById('incRate').value = inflationVal;
+            calculateAccumulation();
+        }
+
+        function syncFromTab1() {
+            if (currentCalculations.finalReal !== undefined) {
+                document.getElementById('tab2Cap').value = Math.round(currentCalculations.finalReal);
+                document.getElementById('tab2Withdrawal').value = Math.round(currentCalculations.desiredIncomeReal);
+                document.getElementById('tab2NomRate').value = document.getElementById('nomRate').value;
+                document.getElementById('tab2InflationRate').value = document.getElementById('inflationRate').value;
+                document.getElementById('tab2TaxRate').value = document.getElementById('taxRate').value;
+                document.getElementById('syncValuesText').innerText = `${formatCurrency(currentCalculations.finalReal)} (Real) / ${formatCurrency(currentCalculations.finalNominal)} (Nominal)`;
+                calculateRetirement();
+            }
+        }
+
+        function switchTab(tabIndex) {
+            const tab1 = document.getElementById('tab1Content');
+            const tab2 = document.getElementById('tab2Content');
+            const btn1 = document.getElementById('btnTab1');
+            const btn2 = document.getElementById('btnTab2');
+
+            if (tabIndex === 1) {
+                tab1.classList.remove('hidden');
+                tab2.classList.add('hidden');
+                btn1.className = "py-4 px-2 tab-active transition-all flex items-center gap-2";
+                btn2.className = "py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2";
+            } else {
+                tab1.classList.add('hidden');
+                tab2.classList.remove('hidden');
+                btn2.className = "py-4 px-2 tab-active transition-all flex items-center gap-2";
+                btn1.className = "py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2";
+                
+                syncFromTab1();
+            }
+        }
+
+        function calculateAccumulation() {
+            const desiredIncomeReal = parseFloat(document.getElementById('desiredIncome').value) || 0;
+            const initialCap = parseFloat(document.getElementById('initialCap').value) || 0;
+            const years = parseInt(document.getElementById('years').value) || 1;
+            const nomRateAA = (parseFloat(document.getElementById('nomRate').value) || 0) / 100;
+            const inflationAA = (parseFloat(document.getElementById('inflationRate').value) || 0) / 100;
+            const taxRate = (parseFloat(document.getElementById('taxRate').value) || 0) / 100;
+            const incRateAA = (parseFloat(document.getElementById('incRate').value) || 0) / 100;
+
+            const nomRateAM = Math.pow(1 + nomRateAA, 1/12) - 1;
+            const netNominalAA = nomRateAA * (1 - taxRate);
+            const netNominalAM = Math.pow(1 + netNominalAA, 1/12) - 1;
+            
+            const realRateAA = ((1 + netNominalAA) / (1 + inflationAA)) - 1;
+            const realRateAM = Math.pow(1 + realRateAA, 1/12) - 1;
+
+            const targetReal = realRateAM > 0 ? (desiredIncomeReal / realRateAM) : 0;
+            const targetNominal = targetReal * Math.pow(1 + inflationAA, years);
+
+            const totalMonths = years * 12;
+
+            let K = 0;
+            for (let m = 1; m <= totalMonths; m++) {
+                let y = Math.floor((m - 1) / 12);
+                let pmtFactor = Math.pow(1 + incRateAA, y);
+                let compFactor = Math.pow(1 + netNominalAM, totalMonths - m);
+                K += pmtFactor * compFactor;
+            }
+
+            const futureP0Nom = initialCap * Math.pow(1 + netNominalAM, totalMonths);
+            let pmt1 = 0;
+            if (K > 0) {
+                pmt1 = (targetNominal - futureP0Nom) / K;
+                if (pmt1 < 0) pmt1 = 0;
+            }
+
+            let currNom = initialCap;
+            let totalInvestedNom = initialCap;
+            let tableRowsHtml = '';
+
+            let labels = ['Ano 0'];
+            let chartNominalData = [initialCap];
+            let chartRealData = [initialCap];
+            let chartInvestedData = [initialCap];
+
+            for (let y = 1; y <= years; y++) {
+                let pmtNomYear = pmt1 * Math.pow(1 + incRateAA, y - 1);
+                let infFactorYear = Math.pow(1 + inflationAA, y);
+                let pmtRealYear = pmtNomYear / infFactorYear;
+
+                for (let m = 1; m <= 12; m++) {
+                    currNom = currNom * (1 + netNominalAM) + pmtNomYear;
+                    totalInvestedNom += pmtNomYear;
+                }
+
+                let currReal = currNom / infFactorYear;
+                let jurosAcum = currNom - totalInvestedNom;
+
+                tableRowsHtml += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${y}º ano</td>
+                        <td class="py-2.5 px-3 font-medium text-slate-800">${formatCurrency(pmtNomYear)}</td>
+                        <td class="py-2.5 px-3 text-slate-600">${formatCurrency(pmtRealYear)}</td>
+                        <td class="py-2.5 px-3 text-slate-600">${formatCurrency(totalInvestedNom)}</td>
+                        <td class="py-2.5 px-3 text-emerald-600 font-medium">${formatCurrency(jurosAcum)}</td>
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${formatCurrency(currNom)}</td>
+                        <td class="py-2.5 px-3 bg-blue-50/70 font-bold text-blue-900">${formatCurrency(currReal)}</td>
+                    </tr>
+                `;
+
+                labels.push(`Ano ${y}`);
+                chartNominalData.push(currNom);
+                chartRealData.push(currReal);
+                chartInvestedData.push(totalInvestedNom);
+            }
+
+            const finalNominal = currNom;
+            const finalReal = currNom / Math.pow(1 + inflationAA, years);
+
+            currentCalculations = {
+                desiredIncomeReal, initialCap, years, nomRateAA, inflationAA, taxRate, incRateAA,
+                netNominalAA, netNominalAM, realRateAA, realRateAM, targetReal, targetNominal, pmt1,
+                finalNominal, finalReal
+            };
+
+            document.getElementById('cardPmt1').innerText = formatCurrency(pmt1);
+            document.getElementById('cardPmtDesc').innerText = `Reajustado em ${formatPercent(incRateAA)} ao ano para acompanhar a inflação.`;
+            document.getElementById('cardTargetNominal').innerText = formatCurrency(finalNominal);
+            document.getElementById('cardTargetReal').innerText = formatCurrency(finalReal);
+
+            document.getElementById('rateNomBrutaAA').innerText = formatPercent(nomRateAA);
+            document.getElementById('rateNomBrutaAM').innerText = formatPercent(nomRateAM);
+            document.getElementById('rateNomLiqAA').innerText = formatPercent(netNominalAA);
+            document.getElementById('rateNomLiqAM').innerText = formatPercent(netNominalAM);
+            document.getElementById('rateRealAA').innerText = formatPercent(realRateAA);
+            document.getElementById('rateRealAM').innerText = formatPercent(realRateAM);
+
+            document.getElementById('syncValuesText').innerText = `${formatCurrency(finalReal)} (Real) / ${formatCurrency(finalNominal)} (Nominal)`;
+            document.getElementById('expYears').innerText = years;
+
+            document.getElementById('accumulationTableBody').innerHTML = tableRowsHtml;
+
+            renderAccumulationChart(labels, chartNominalData, chartRealData, chartInvestedData);
+            saveToLocalStorage();
+        }
+
+        function renderAccumulationChart(labels, nomData, realData, investedData) {
+            const ctx = document.getElementById('accumulationChart').getContext('2d');
+            if (accumChartInstance) accumChartInstance.destroy();
+
+            accumChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Saldo Nominal (No Banco)',
+                            data: nomData,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Saldo Real (Poder de Compra Hoje)',
+                            data: realData,
+                            borderColor: '#059669',
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Total Aportado (Do Seu Bolso)',
+                            data: investedData,
+                            borderColor: '#64748b',
+                            backgroundColor: 'transparent',
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + (value / 1000).toFixed(0) + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function getTab2RealRateAM() {
+            const tab2NomRateAA = (parseFloat(document.getElementById('tab2NomRate').value) || 0) / 100;
+            const inflationAA = (parseFloat(document.getElementById('tab2InflationRate').value) || 0) / 100;
+            const taxRate = (parseFloat(document.getElementById('tab2TaxRate').value) || 0) / 100;
+
+            const netNominalAA = tab2NomRateAA * (1 - taxRate);
+            const realRateAA = ((1 + netNominalAA) / (1 + inflationAA)) - 1;
+            return Math.pow(1 + realRateAA, 1/12) - 1;
+        }
+
+        function setPresetWithdrawal(type) {
+            const initialCap = parseFloat(document.getElementById('tab2Cap').value) || 0;
+            const realRateAM = getTab2RealRateAM();
+            const perpetualIncome = initialCap * realRateAM;
+
+            if (type === 'perpetual') {
+                document.getElementById('tab2Withdrawal').value = Math.round(perpetualIncome);
+            } else if (type === 'rule4p') {
+                const monthly4Percent = (initialCap * 0.04) / 12;
+                document.getElementById('tab2Withdrawal').value = Math.round(monthly4Percent);
+            } else if (type === 'growth') {
+                document.getElementById('tab2Withdrawal').value = Math.round(perpetualIncome * 0.8);
+            } else if (type === 'depletion') {
+                document.getElementById('tab2Withdrawal').value = Math.round(perpetualIncome * 1.25);
+            }
+            calculateRetirement();
+        }
+
+        function setChartFilter(filter) {
+            activeChartFilter = filter;
+            updateChartFilterButtons();
+            applyChartFilterAndRender();
+        }
+
+        function updateChartFilterButtons() {
+            const options = ['5', '10', '15', 'max'];
+            options.forEach(opt => {
+                const btnKey = opt === 'max' ? 'Max' : opt;
+                const btn = document.getElementById('btnFilter' + btnKey);
+                if (!btn) return;
+
+                if (String(activeChartFilter) === opt) {
+                    btn.className = "px-3 py-1.5 rounded-lg transition bg-white text-blue-600 shadow-sm font-bold";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600";
+                }
+            });
+        }
+
+        function applyChartFilterAndRender() {
+            if (!currentRetData.labels || currentRetData.labels.length === 0) return;
+
+            let limit = currentRetData.labels.length;
+            if (activeChartFilter !== 'max') {
+                const requestedYears = parseInt(activeChartFilter);
+                limit = Math.min(requestedYears + 1, currentRetData.labels.length);
+            }
+
+            const slicedLabels = currentRetData.labels.slice(0, limit);
+            const slicedSelectedReal = currentRetData.selectedReal.slice(0, limit);
+            const slicedPerpetualReal = currentRetData.perpetualReal.slice(0, limit);
+            const slicedNominalBank = currentRetData.nominalBank.slice(0, limit);
+
+            renderRetirementChart(slicedLabels, slicedSelectedReal, slicedPerpetualReal, slicedNominalBank);
+        }
+
+        function calculateRetirement() {
+            const initialCapReal = parseFloat(document.getElementById('tab2Cap').value) || 0;
+            const monthlyWithdrawalReal = parseFloat(document.getElementById('tab2Withdrawal').value) || 0;
+            const horizonYears = parseInt(document.getElementById('tab2Horizon').value) || 30;
+
+            const realRateAM = getTab2RealRateAM();
+            const inflationAA = (parseFloat(document.getElementById('tab2InflationRate').value) || 0) / 100;
+            const accumYears = currentCalculations.years || 0;
+
+            const monthlyRealInterest = initialCapReal * realRateAM;
+            const monthlyNetFlow = monthlyRealInterest - monthlyWithdrawalReal;
+
+            document.getElementById('cardMonthlyRealInterest').innerText = formatCurrency(monthlyRealInterest);
+            document.getElementById('cardMonthlyWithdrawal').innerText = formatCurrency(monthlyWithdrawalReal);
+            document.getElementById('cardMonthlyNetFlow').innerText = formatCurrency(monthlyNetFlow);
+
+            const statusContainer = document.getElementById('statusCardContainer');
+            const statusTag = document.getElementById('statusCardTag');
+            const statusBadge = document.getElementById('statusBadge');
+            const statusTitle = document.getElementById('statusCardTitle');
+            const statusDesc = document.getElementById('statusCardDesc');
+            const netFlowLabel = document.getElementById('cardMonthlyNetFlowLabel');
+
+            if (Math.abs(monthlyNetFlow) < 1) {
+                statusContainer.className = "bg-emerald-600 text-white p-6 rounded-2xl shadow-sm transition-all duration-300";
+                statusTag.innerText = "Estratégia Sustentável";
+                statusBadge.innerText = "Renda Perpétua";
+                statusTitle.innerText = "Patrimônio Preservado Indefinidamente";
+                statusDesc.innerText = "Sua retirada é exatamente igual aos juros reais. O capital principal permanece 100% intacto ao longo de décadas.";
+                netFlowLabel.innerText = "Equilíbrio neutro do capital";
+                document.getElementById('cardMonthlyNetFlow').className = "text-xl font-bold mt-1 text-slate-700";
+            } else if (monthlyNetFlow > 0) {
+                statusContainer.className = "bg-blue-600 text-white p-6 rounded-2xl shadow-sm transition-all duration-300";
+                statusTag.innerText = "Estratégia de Acumulação Contínua";
+                statusBadge.innerText = "Crescimento do Capital";
+                statusTitle.innerText = "Seu Patrimônio Continua Crescendo";
+                statusDesc.innerText = `Você saca menos que os juros gerados. A sobra de ${formatCurrency(monthlyNetFlow)}/mês é reaplicada, expandindo seu poder de compra.`;
+                netFlowLabel.innerText = "Reaplicado mensalmente";
+                document.getElementById('cardMonthlyNetFlow').className = "text-xl font-bold mt-1 text-emerald-600";
+            } else {
+                statusContainer.className = "bg-rose-600 text-white p-6 rounded-2xl shadow-sm transition-all duration-300";
+                statusTag.innerText = "Estratégia de Consumo do Principal";
+                statusBadge.innerText = "Desvalorização / Exaustão";
+                statusTitle.innerText = "Consumo Gradual do Patrimônio";
+                statusDesc.innerText = `A retirada excede os juros em ${formatCurrency(Math.abs(monthlyNetFlow))}/mês. O principal será gradualmente reduzido ao longo do tempo.`;
+                netFlowLabel.innerText = "Retirado do capital principal";
+                document.getElementById('cardMonthlyNetFlow').className = "text-xl font-bold mt-1 text-rose-600";
+            }
+
+            let currentCapReal = initialCapReal;
+            let tableHtml = '';
+            
+            let labels = ['Ano 0'];
+            let chartSelectedReal = [initialCapReal];
+            let chartPerpetualReal = [initialCapReal];
+            let chartNominalBank = [initialCapReal * Math.pow(1 + inflationAA, accumYears)];
+
+            for (let y = 1; y <= horizonYears; y++) {
+                let startCapReal = currentCapReal;
+                let annualRealYield = 0;
+                let annualWithdrawalReal = monthlyWithdrawalReal * 12;
+
+                for (let m = 1; m <= 12; m++) {
+                    let mYield = currentCapReal * realRateAM;
+                    annualRealYield += mYield;
+                    currentCapReal = currentCapReal + mYield - monthlyWithdrawalReal;
+                    if (currentCapReal < 0) currentCapReal = 0;
+                }
+
+                let annualNetChange = annualRealYield - annualWithdrawalReal;
+                let totalInflationYears = accumYears + y;
+                let monthlyWithdrawalNominal = monthlyWithdrawalReal * Math.pow(1 + inflationAA, totalInflationYears);
+                let nominalBankValue = currentCapReal * Math.pow(1 + inflationAA, totalInflationYears);
+
+                tableHtml += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${y}º ano</td>
+                        <td class="py-2.5 px-3 text-slate-700">${formatCurrency(startCapReal)}</td>
+                        <td class="py-2.5 px-3 text-emerald-600 font-medium">${formatCurrency(annualRealYield)}</td>
+                        <td class="py-2.5 px-3 bg-blue-50/70">
+                            <div class="font-bold text-blue-900">${formatCurrency(monthlyWithdrawalReal)} <span class="text-[10px] text-blue-600 font-semibold">(Real)</span></div>
+                            <div class="text-[11px] text-slate-500 font-medium">${formatCurrency(monthlyWithdrawalNominal)} <span class="text-[10px] text-slate-400 font-normal">(Nominal)</span></div>
+                        </td>
+                        <td class="py-2.5 px-3 text-blue-700 font-medium">${formatCurrency(annualWithdrawalReal)}</td>
+                        <td class="py-2.5 px-3 ${annualNetChange >= 0 ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold'}">
+                            ${annualNetChange >= 0 ? '+' : ''}${formatCurrency(annualNetChange)}
+                        </td>
+                        <td class="py-2.5 px-3 bg-emerald-50/70 font-bold text-emerald-900">${formatCurrency(currentCapReal)}</td>
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${formatCurrency(nominalBankValue)}</td>
+                    </tr>
+                `;
+
+                labels.push(`Ano ${y}`);
+                chartSelectedReal.push(currentCapReal);
+                chartPerpetualReal.push(initialCapReal);
+                chartNominalBank.push(nominalBankValue);
+            }
+
+            document.getElementById('retirementTableBody').innerHTML = tableHtml;
+
+            // Store full data and trigger chart filter
+            currentRetData = {
+                labels: labels,
+                selectedReal: chartSelectedReal,
+                perpetualReal: chartPerpetualReal,
+                nominalBank: chartNominalBank
+            };
+
+            updateChartFilterButtons();
+            applyChartFilterAndRender();
+            saveToLocalStorage();
+        }
+
+        function renderRetirementChart(labels, selectedReal, perpetualReal, nominalBank) {
+            const ctx = document.getElementById('retirementChart').getContext('2d');
+            if (retChartInstance) retChartInstance.destroy();
+
+            retChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Cenário Selecionado (Poder de Compra Real)',
+                            data: selectedReal,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Renda Perpétua Mantida (Linha de Base Real)',
+                            data: perpetualReal,
+                            borderColor: '#059669',
+                            borderDash: [4, 4],
+                            backgroundColor: 'transparent',
+                            tension: 0
+                        },
+                        {
+                            label: 'Saldo Nominal no Banco (Com Inflação Acumulada)',
+                            data: nominalBank,
+                            borderColor: '#94a3b8',
+                            backgroundColor: 'transparent',
+                            borderDash: [2, 2],
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(val) {
+                                    return 'R$ ' + (val / 1000).toFixed(0) + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.onload = function() {
+            const hasSavedData = loadFromLocalStorage();
+            calculateAccumulation();
+            
+            if (hasSavedData) {
+                calculateRetirement();
+            } else {
+                syncFromTab1();
+            }
+        };
+    </script>
+</body>
+</html>
