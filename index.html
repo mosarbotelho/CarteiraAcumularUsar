@@ -39,14 +39,18 @@
 
     <!-- Navigation Tabs -->
     <div class="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 flex gap-8">
-            <button id="btnTab1" onclick="switchTab(1)" class="py-4 px-2 tab-active transition-all flex items-center gap-2">
+        <div class="max-w-7xl mx-auto px-4 flex gap-4 sm:gap-8 overflow-x-auto">
+            <button id="btnTab1" onclick="switchTab(1)" class="py-4 px-2 tab-active transition-all flex items-center gap-2 whitespace-nowrap">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                1. Fase de Acumulação (Construção)
+                1. Acumulação
             </button>
-            <button id="btnTab2" onclick="switchTab(2)" class="py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2">
+            <button id="btnTab2" onclick="switchTab(2)" class="py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                2. Fase de Usufruto (Vivendo de Renda)
+                2. Usufruto (Renda)
+            </button>
+            <button id="btnTab3" onclick="switchTab(3)" class="py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                3. Montar Carteira
             </button>
         </div>
     </div>
@@ -154,7 +158,7 @@
                                         <td class="py-2 px-3 font-semibold text-slate-900">Rendimento Bruto</td>
                                         <td class="py-2 px-3" id="rateNomBrutaAA">10,00%</td>
                                         <td class="py-2 px-3" id="rateNomBrutaAM">0,80%</td>
-                                        <td class="py-2 px-3 text-slate-500">Taxa contratada do investimento</td>
+                                        <td class="py-2 px-3 text-slate-500">Taxa contratada ou média da carteira</td>
                                     </tr>
                                     <tr>
                                         <td class="py-2 px-3 font-semibold text-slate-900">Rendimento Líquido (s/ IR)</td>
@@ -176,10 +180,10 @@
                     <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-amber-900 text-sm space-y-2">
                         <div class="font-bold flex items-center gap-2 text-amber-950">
                             <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Integração Direta com a Aba 2
+                            Dica de Integração com a Aba 3
                         </div>
                         <p class="text-xs text-amber-900/90">
-                            O saldo acumulado de <strong id="expYears">20</strong> anos de investimento é sincronizado com as taxas de rendimento para simular o usufruto na Aba 2 sem divergências.
+                            Em vez de estimar uma taxa manualmente, acesse a <strong>Aba 3 (Montar Carteira)</strong> para montar a sua carteira por ativos e configurar metas de alocação por segmento!
                         </p>
                     </div>
 
@@ -333,15 +337,6 @@
                         </div>
                     </div>
 
-                    <div class="bg-slate-100 border border-slate-200 rounded-2xl p-5 text-slate-700 text-xs space-y-2">
-                        <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M12 7h.01"></path></svg>
-                            Validação dos Cálculos
-                        </div>
-                        <p><strong>Renda Perpétua:</strong> Quando a retirada é exatamente igual aos juros reais do patrimônio, o poder de compra permanece constante sem nunca esgotar o capital.</p>
-                        <p><strong>Alinhamento de Taxas:</strong> Garantir que a taxa da Aba 1 e da Aba 2 sejam idênticas é essencial para que a simulação de aposentadoria seja exata.</p>
-                    </div>
-
                 </div>
 
             </div>
@@ -353,7 +348,6 @@
                         <h3 class="text-lg font-bold text-slate-900">Projeção Dinâmica do Patrimônio na Aposentadoria</h3>
                         <p class="text-xs text-slate-500">Comparação visual entre o Cenário Selecionado vs. Renda Perpétua vs. Efeito Inflacionário Nominal.</p>
                     </div>
-                    <!-- Time Horizon Buttons for Chart -->
                     <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-medium">
                         <button type="button" onclick="setChartFilter(5)" id="btnFilter5" class="px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600">5 Anos</button>
                         <button type="button" onclick="setChartFilter(10)" id="btnFilter10" class="px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600">10 Anos</button>
@@ -393,25 +387,310 @@
 
         </div>
 
+
+        <!-- TAB 3: CARTEIRA DE INVESTIMENTOS -->
+        <div id="tab3Content" class="space-y-8 hidden">
+            
+            <!-- Resumo Geral da Carteira e Botoes de Acao -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Resumo da Carteira de Investimentos</h2>
+                        <p class="text-xs text-slate-500">Cálculo de média ponderada por ativo, classe de investimento e metas de acúmulo.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="toggleMetaPanel()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            🎯 Configurar Meta de Alocação (%)
+                        </button>
+                        <button type="button" onclick="applyPortfolioToTab1()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Aplicar à Aba 1
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PAINEL DE CONFIGURAÇÃO DA META DE ALOCAÇÃO (%) -->
+                <div id="metaPanel" class="bg-slate-900 text-white p-6 rounded-2xl space-y-4 border border-slate-800 transition-all">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <div>
+                            <h3 class="text-base font-bold text-indigo-300 flex items-center gap-2">
+                                🎯 Meta de Alocação por Segmento (%)
+                            </h3>
+                            <p class="text-xs text-slate-400">Defina o percentual do patrimônio acumulado final da <strong>Aba 1</strong> destinado a cada segmento.</p>
+                        </div>
+                        <span id="targetWealthBadge" class="bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 text-xs font-bold px-3 py-1 rounded-lg">
+                            Patrimônio Meta (Aba 1): R$ 0,00
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Ações (%)</label>
+                            <input type="number" id="meta_acoes" value="30" min="0" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="calculateMetaQuantities()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">FIIs (%)</label>
+                            <input type="number" id="meta_fiis" value="30" min="0" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="calculateMetaQuantities()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">ETFs (%)</label>
+                            <input type="number" id="meta_etfs" value="20" min="0" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="calculateMetaQuantities()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Renda Fixa (%)</label>
+                            <input type="number" id="meta_rendaFixa" value="20" min="0" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="calculateMetaQuantities()">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
+                        <div class="text-xs text-slate-300 flex items-center gap-2">
+                            <span>Soma das Metas: <strong id="metaTotalPct" class="text-emerald-400 text-sm">100%</strong></span>
+                            <span class="text-slate-500">|</span>
+                            <span class="text-slate-400">Regra: Capital igual por ativo no segmento com arredondamento de cotas para cima.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div class="bg-slate-900 text-white p-4 rounded-xl">
+                        <span class="text-xs font-semibold uppercase text-slate-400">Patrimônio Atual</span>
+                        <div class="text-2xl font-extrabold mt-1" id="portfolioTotalValue">R$ 0,00</div>
+                        <p class="text-[11px] text-slate-400 mt-1">Soma dos ativos atuais</p>
+                    </div>
+                    <div class="bg-blue-600 text-white p-4 rounded-xl">
+                        <span class="text-xs font-semibold uppercase text-blue-200">Rendimento Ponderado</span>
+                        <div class="text-2xl font-extrabold mt-1" id="portfolioWeightedYield">0,00% a.a.</div>
+                        <p class="text-[11px] text-blue-100 mt-1">Taxa bruta consolidada</p>
+                    </div>
+                    <div class="bg-emerald-600 text-white p-4 rounded-xl">
+                        <span class="text-xs font-semibold uppercase text-emerald-200">Renda Passiva Bruta / Mês</span>
+                        <div class="text-2xl font-extrabold mt-1" id="portfolioMonthlyIncome">R$ 0,00</div>
+                        <p class="text-[11px] text-emerald-100 mt-1">Projeção mensal estimada</p>
+                    </div>
+                    <div class="bg-purple-600 text-white p-4 rounded-xl">
+                        <span class="text-xs font-semibold uppercase text-purple-200">Renda Passiva Bruta / Ano</span>
+                        <div class="text-2xl font-extrabold mt-1" id="portfolioAnnualIncome">R$ 0,00</div>
+                        <p class="text-[11px] text-purple-100 mt-1">Projeção anual total</p>
+                    </div>
+                </div>
+
+                <!-- Resumo por Segmento -->
+                <div class="overflow-x-auto pt-2">
+                    <h3 class="text-sm font-bold text-slate-900 mb-3">Consolidado por Classe de Ativo</h3>
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold">
+                                <th class="py-2.5 px-3">Segmento</th>
+                                <th class="py-2.5 px-3">Valor Atual (R$)</th>
+                                <th class="py-2.5 px-3">Part. Atual (%)</th>
+                                <th class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/50">Part. Meta (%)</th>
+                                <th class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/50">Valor Meta (R$)</th>
+                                <th class="py-2.5 px-3">Rendimento Ponderado (% a.a.)</th>
+                                <th class="py-2.5 px-3">Renda Passiva Anual (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="segmentSummaryTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 1: AÇÕES -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
+                            1. Ações (Dividendos Anuais - DPA)
+                        </h3>
+                        <p class="text-xs text-slate-500">D.Y. Anual = (DPA / Valor da Ação) × 100</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="triggerImport('acoes')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-blue-200 transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Importar (CSV/TXT/JSON)
+                        </button>
+                        <button type="button" onclick="addAssetRow('acoes')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">+ Adicionar Ação</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
+                                <th class="py-2 px-3">Ativo/Ticker</th>
+                                <th class="py-2 px-3">Qtd. Atual</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold">Qtd. Meta</th>
+                                <th class="py-2 px-3">Valor da Ação (R$)</th>
+                                <th class="py-2 px-3">DPA Anual (R$)</th>
+                                <th class="py-2 px-3 text-blue-600">D.Y. Anual (% a.a.)</th>
+                                <th class="py-2 px-3">Total Atual (R$)</th>
+                                <th class="py-2 px-3 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="acoesTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 2: FUNDOS IMOBILIÁRIOS (FIIs) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span>
+                            2. Fundos Imobiliários - FIIs (Rendimento Mensal)
+                        </h3>
+                        <p class="text-xs text-slate-500">Informe o rendimento mensal por cota.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="triggerImport('fiis')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-200 transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Importar (CSV/TXT/JSON)
+                        </button>
+                        <button type="button" onclick="addAssetRow('fiis')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">+ Adicionar FII</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
+                                <th class="py-2 px-3">Ativo/Ticker</th>
+                                <th class="py-2 px-3">Qtd. Atual</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold">Qtd. Meta</th>
+                                <th class="py-2 px-3">Cotação (R$)</th>
+                                <th class="py-2 px-3">Rend. Mensal/Cota (R$)</th>
+                                <th class="py-2 px-3 text-emerald-600">D.Y. Anualizado (% a.a.)</th>
+                                <th class="py-2 px-3">Total Atual (R$)</th>
+                                <th class="py-2 px-3 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="fiisTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 3: ETFs -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-purple-600 inline-block"></span>
+                            3. ETFs (Fundos de Índice)
+                        </h3>
+                        <p class="text-xs text-slate-500">Informe a cotação e rendimento esperado (% a.a.).</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="triggerImport('etfs')" class="bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-purple-200 transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Importar (CSV/TXT/JSON)
+                        </button>
+                        <button type="button" onclick="addAssetRow('etfs')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">+ Adicionar ETF</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
+                                <th class="py-2 px-3">Ativo/Ticker</th>
+                                <th class="py-2 px-3">Qtd. Atual</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold">Qtd. Meta</th>
+                                <th class="py-2 px-3">Preço Unitário (R$)</th>
+                                <th class="py-2 px-3 text-purple-600">Rendimento Bruto (% a.a.)</th>
+                                <th class="py-2 px-3">Total Atual (R$)</th>
+                                <th class="py-2 px-3 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="etfsTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 4: RENDA FIXA -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+                            4. Renda Fixa (Tesouro, CDBs, LCI/LCA, Cri/Cra)
+                        </h3>
+                        <p class="text-xs text-slate-500">Informe quantidade, valor unitário e taxa bruta (% a.a.).</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="triggerImport('rendaFixa')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Importar (CSV/TXT/JSON)
+                        </button>
+                        <button type="button" onclick="addAssetRow('rendaFixa')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">+ Adicionar Renda Fixa</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
+                                <th class="py-2 px-3">Título / Descrição</th>
+                                <th class="py-2 px-3">Qtd. Atual</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold">Qtd. Meta</th>
+                                <th class="py-2 px-3">Valor Unitário (R$)</th>
+                                <th class="py-2 px-3 text-amber-600">Rendimento Bruto (% a.a.)</th>
+                                <th class="py-2 px-3">Total Atual (R$)</th>
+                                <th class="py-2 px-3 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="rendaFixaTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
     </main>
 
     <script>
-        const STORAGE_KEY = 'simulador_aposentadoria_config_v3';
+        const STORAGE_KEY = 'simulador_aposentadoria_config_v6';
 
         let accumChartInstance = null;
         let retChartInstance = null;
         let currentCalculations = {};
 
-        // Stores full raw data for Aba 2 chart filtering
+        // Data for Aba 2 chart
         let currentRetData = { labels: [], selectedReal: [], perpetualReal: [], nominalBank: [] };
         let activeChartFilter = 'max';
 
+        // Initial Sample Data for Tab 3 Portfolio
+        let portfolioState = {
+            meta: {
+                acoes: 30,
+                fiis: 30,
+                etfs: 20,
+                rendaFixa: 20
+            },
+            acoes: [
+                { name: 'PETR4', qty: 100, price: 38.50, dpa: 4.20, targetQty: 0 },
+                { name: 'VALE3', qty: 50, price: 62.00, dpa: 5.50, targetQty: 0 }
+            ],
+            fiis: [
+                { name: 'HGLG11', qty: 20, price: 162.00, monthlyIncome: 1.10, targetQty: 0 },
+                { name: 'KNCR11', qty: 30, price: 102.00, monthlyIncome: 1.00, targetQty: 0 }
+            ],
+            etfs: [
+                { name: 'IVVB11', qty: 15, price: 310.00, yieldRate: 11.50, targetQty: 0 }
+            ],
+            rendaFixa: [
+                { name: 'Tesouro IPCA+ 2035', qty: 5, price: 3200.00, yieldRate: 10.20, targetQty: 0 },
+                { name: 'CDB 110% CDI', qty: 1, price: 10000.00, yieldRate: 11.50, targetQty: 0 }
+            ]
+        };
+
         function formatCurrency(val) {
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
         }
 
         function formatPercent(val) {
-            return (val * 100).toFixed(2).replace('.', ',') + '%';
+            return ((val || 0) * 100).toFixed(2).replace('.', ',') + '%';
         }
 
         function saveToLocalStorage() {
@@ -421,7 +700,7 @@
                 'tab2NomRate', 'tab2InflationRate', 'tab2TaxRate',
                 'tab2Withdrawal', 'tab2Horizon'
             ];
-            const data = {};
+            const data = { portfolioState };
             inputsToSave.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) data[id] = el.value;
@@ -435,6 +714,13 @@
             try {
                 const data = JSON.parse(saved);
                 for (const [id, val] of Object.entries(data)) {
+                    if (id === 'portfolioState' && val) {
+                        portfolioState = val;
+                        if (!portfolioState.meta) {
+                            portfolioState.meta = { acoes: 30, fiis: 30, etfs: 20, rendaFixa: 20 };
+                        }
+                        continue;
+                    }
                     const el = document.getElementById(id);
                     if (el && val !== undefined && val !== null) {
                         el.value = val;
@@ -475,21 +761,34 @@
         function switchTab(tabIndex) {
             const tab1 = document.getElementById('tab1Content');
             const tab2 = document.getElementById('tab2Content');
+            const tab3 = document.getElementById('tab3Content');
+
             const btn1 = document.getElementById('btnTab1');
             const btn2 = document.getElementById('btnTab2');
+            const btn3 = document.getElementById('btnTab3');
+
+            const inactiveClass = "py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 whitespace-nowrap";
+            const activeClass = "py-4 px-2 tab-active transition-all flex items-center gap-2 whitespace-nowrap";
+
+            tab1.classList.add('hidden');
+            tab2.classList.add('hidden');
+            tab3.classList.add('hidden');
+
+            btn1.className = inactiveClass;
+            btn2.className = inactiveClass;
+            btn3.className = inactiveClass;
 
             if (tabIndex === 1) {
                 tab1.classList.remove('hidden');
-                tab2.classList.add('hidden');
-                btn1.className = "py-4 px-2 tab-active transition-all flex items-center gap-2";
-                btn2.className = "py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2";
-            } else {
-                tab1.classList.add('hidden');
+                btn1.className = activeClass;
+            } else if (tabIndex === 2) {
                 tab2.classList.remove('hidden');
-                btn2.className = "py-4 px-2 tab-active transition-all flex items-center gap-2";
-                btn1.className = "py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2";
-                
+                btn2.className = activeClass;
                 syncFromTab1();
+            } else if (tabIndex === 3) {
+                tab3.classList.remove('hidden');
+                btn3.className = activeClass;
+                calculateMetaQuantities();
             }
         }
 
@@ -591,12 +890,15 @@
             document.getElementById('rateRealAM').innerText = formatPercent(realRateAM);
 
             document.getElementById('syncValuesText').innerText = `${formatCurrency(finalReal)} (Real) / ${formatCurrency(finalNominal)} (Nominal)`;
-            document.getElementById('expYears').innerText = years;
 
             document.getElementById('accumulationTableBody').innerHTML = tableRowsHtml;
 
             renderAccumulationChart(labels, chartNominalData, chartRealData, chartInvestedData);
             saveToLocalStorage();
+
+            if (document.getElementById('targetWealthBadge')) {
+                document.getElementById('targetWealthBadge').innerText = `Patrimônio Meta (Aba 1): ${formatCurrency(finalNominal)}`;
+            }
         }
 
         function renderAccumulationChart(labels, nomData, realData, investedData) {
@@ -816,7 +1118,6 @@
 
             document.getElementById('retirementTableBody').innerHTML = tableHtml;
 
-            // Store full data and trigger chart filter
             currentRetData = {
                 labels: labels,
                 selectedReal: chartSelectedReal,
@@ -882,9 +1183,446 @@
             });
         }
 
+        // ================= TAB 3 LOGIC & IMPORT FEATURE =================
+
+        function toggleMetaPanel() {
+            const p = document.getElementById('metaPanel');
+            p.classList.toggle('hidden');
+        }
+
+        function triggerImport(type) {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.csv, .json, .txt';
+            fileInput.onchange = (e) => handleFileImport(e, type);
+            fileInput.click();
+        }
+
+        function parseCleanFloat(val) {
+            if (typeof val === 'number') return val;
+            if (!val) return 0;
+            let str = String(val).trim().replace('R$', '').replace('%', '').trim();
+            if (str.includes(',') && str.includes('.')) {
+                str = str.replace(/\./g, '').replace(',', '.');
+            } else if (str.includes(',')) {
+                str = str.replace(',', '.');
+            }
+            return parseFloat(str) || 0;
+        }
+
+        function handleFileImport(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                let items = [];
+
+                if (file.name.endsWith('.json')) {
+                    try {
+                        items = JSON.parse(content);
+                    } catch (err) {
+                        alert('Erro ao ler arquivo JSON. Certifique-se de que é uma estrutura de lista de objetos válida.');
+                        return;
+                    }
+                } else {
+                    const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
+                    if (lines.length === 0) return;
+
+                    let delimiter = ',';
+                    if (lines[0].includes(';')) {
+                        delimiter = ';';
+                    } else if (lines[0].includes('\t')) {
+                        delimiter = '\t';
+                    } else if (!lines[0].includes(',') && lines[0].trim().includes(' ')) {
+                        delimiter = /\s+/;
+                    }
+
+                    const firstLineLower = lines[0].toLowerCase();
+                    const hasHeader = firstLineLower.includes('nome') || firstLineLower.includes('ticker') || firstLineLower.includes('ativo') || firstLineLower.includes('qtd') || firstLineLower.includes('quantidade');
+
+                    let headers = [];
+                    let startIdx = 0;
+
+                    if (hasHeader) {
+                        if (delimiter instanceof RegExp) {
+                            headers = (lines[0].match(/(?:[^\s"]+|"[^"]*")+/g) || []).map(h => h.replace(/^"|"$/g, '').trim().toLowerCase());
+                        } else {
+                            headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase().replace(/"/g, ''));
+                        }
+                        startIdx = 1;
+                    }
+
+                    for (let i = startIdx; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+
+                        let cols = [];
+                        if (delimiter instanceof RegExp) {
+                            cols = line.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
+                            cols = cols.map(c => c.replace(/^"|"$/g, '').trim());
+                        } else {
+                            cols = line.split(delimiter).map(c => c.trim().replace(/"/g, ''));
+                        }
+
+                        if (cols.length < 2) continue;
+
+                        let rowObj = {};
+                        if (hasHeader) {
+                            headers.forEach((h, idx) => {
+                                rowObj[h] = cols[idx] || '';
+                            });
+                        } else {
+                            rowObj.name = cols[0];
+                            rowObj.qty = cols[1];
+                            rowObj.price = cols[2];
+                            rowObj.yield = cols[3];
+                        }
+                        items.push(rowObj);
+                    }
+                }
+
+                let importedCount = 0;
+                items.forEach(raw => {
+                    const name = raw.name || raw.nome || raw.ticker || raw.ativo || raw.symbol || raw['ativo/ticker'] || raw['descrição'] || 'Ativo Importado';
+                    const qty = parseCleanFloat(raw.qty || raw.qtd || raw.quantidade || raw['qtd. atual'] || raw.quantity);
+                    const price = parseCleanFloat(raw.price || raw.preco || raw.preço || raw.cotacao || raw.cotação || raw.valor || raw.val);
+
+                    if (type === 'acoes') {
+                        const dpa = parseCleanFloat(raw.dpa || raw.rendimento || raw.yield || raw['dpa anual (r$)'] || raw.dividend);
+                        portfolioState.acoes.push({ name, qty, price, dpa, targetQty: 0 });
+                    } else if (type === 'fiis') {
+                        const monthlyIncome = parseCleanFloat(raw.monthlyincome || raw.monthlyIncome || raw.rendimento || raw.yield || raw['rend. mensal/cota (r$)'] || raw.dpa);
+                        portfolioState.fiis.push({ name, qty, price, monthlyIncome, targetQty: 0 });
+                    } else if (type === 'etfs') {
+                        const yieldRate = parseCleanFloat(raw.yieldrate || raw.yieldRate || raw.rendimento || raw.yield || raw.taxa || raw['rendimento bruto (% a.a.)']);
+                        portfolioState.etfs.push({ name, qty, price, yieldRate, targetQty: 0 });
+                    } else if (type === 'rendaFixa') {
+                        const yieldRate = parseCleanFloat(raw.yieldrate || raw.yieldRate || raw.rendimento || raw.yield || raw.taxa || raw['rendimento bruto (% a.a.)']);
+                        portfolioState.rendaFixa.push({ name, qty, price, yieldRate, targetQty: 0 });
+                    }
+                    importedCount++;
+                });
+
+                if (importedCount > 0) {
+                    renderPortfolio();
+                    calculateMetaQuantities();
+                    alert(`${importedCount} ativo(s) importado(s) com sucesso para a categoria!`);
+                } else {
+                    alert('Nenhum ativo pôde ser extraído do arquivo. Verifique se o formato contém colunas com Nome, Quantidade e Preço.');
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        function addAssetRow(type) {
+            if (type === 'acoes') {
+                portfolioState.acoes.push({ name: 'NOVA AÇÃO', qty: 0, price: 0, dpa: 0, targetQty: 0 });
+            } else if (type === 'fiis') {
+                portfolioState.fiis.push({ name: 'NOVO FII', qty: 0, price: 0, monthlyIncome: 0, targetQty: 0 });
+            } else if (type === 'etfs') {
+                portfolioState.etfs.push({ name: 'NOVO ETF', qty: 0, price: 0, yieldRate: 0, targetQty: 0 });
+            } else if (type === 'rendaFixa') {
+                portfolioState.rendaFixa.push({ name: 'NOVO TÍTULO', qty: 1, price: 0, yieldRate: 0, targetQty: 0 });
+            }
+            renderPortfolio();
+            calculateMetaQuantities();
+        }
+
+        function removeAssetRow(type, index) {
+            portfolioState[type].splice(index, 1);
+            renderPortfolio();
+            calculateMetaQuantities();
+        }
+
+        function updateAssetField(type, index, field, value) {
+            portfolioState[type][index][field] = field === 'name' ? value : (parseFloat(value) || 0);
+            calculateMetaQuantities();
+        }
+
+        function calculateMetaQuantities() {
+            const targetWealth = currentCalculations.finalNominal || 1000000;
+            
+            const metaAcoes = parseFloat(document.getElementById('meta_acoes').value) || 0;
+            const metaFiis = parseFloat(document.getElementById('meta_fiis').value) || 0;
+            const metaEtfs = parseFloat(document.getElementById('meta_etfs').value) || 0;
+            const metaRendaFixa = parseFloat(document.getElementById('meta_rendaFixa').value) || 0;
+
+            portfolioState.meta = {
+                acoes: metaAcoes,
+                fiis: metaFiis,
+                etfs: metaEtfs,
+                rendaFixa: metaRendaFixa
+            };
+
+            const totalMetaPct = metaAcoes + metaFiis + metaEtfs + metaRendaFixa;
+            const metaTotalEl = document.getElementById('metaTotalPct');
+            if (metaTotalEl) {
+                metaTotalEl.innerText = totalMetaPct.toFixed(0) + '%';
+                metaTotalEl.className = totalMetaPct === 100 ? "text-emerald-400 font-bold" : "text-rose-400 font-bold";
+            }
+
+            const segments = [
+                { key: 'acoes', pct: metaAcoes },
+                { key: 'fiis', pct: metaFiis },
+                { key: 'etfs', pct: metaEtfs },
+                { key: 'rendaFixa', pct: metaRendaFixa }
+            ];
+
+            segments.forEach(seg => {
+                const segTargetValue = targetWealth * (seg.pct / 100);
+                const items = portfolioState[seg.key];
+                const numItems = items ? items.length : 0;
+                
+                if (numItems > 0 && segTargetValue > 0) {
+                    const targetMoneyPerAsset = segTargetValue / numItems;
+                    items.forEach(item => {
+                        const price = parseFloat(item.price) || 0;
+                        if (price > 0) {
+                            item.targetQty = Math.ceil(targetMoneyPerAsset / price);
+                        } else {
+                            item.targetQty = 0;
+                        }
+                    });
+                } else if (items) {
+                    items.forEach(item => item.targetQty = 0);
+                }
+            });
+
+            recalculatePortfolioValues();
+        }
+
+        function recalculatePortfolioValues() {
+            const targetWealth = currentCalculations.finalNominal || 1000000;
+
+            let totalPortfolioValue = 0;
+            let totalAnnualIncome = 0;
+
+            const segmentTotals = {
+                acoes: { value: 0, annualIncome: 0, label: 'Ações', metaPct: portfolioState.meta?.acoes || 30 },
+                fiis: { value: 0, annualIncome: 0, label: 'Fundos Imobiliários (FIIs)', metaPct: portfolioState.meta?.fiis || 30 },
+                etfs: { value: 0, annualIncome: 0, label: 'ETFs', metaPct: portfolioState.meta?.etfs || 20 },
+                rendaFixa: { value: 0, annualIncome: 0, label: 'Renda Fixa', metaPct: portfolioState.meta?.rendaFixa || 20 }
+            };
+
+            // 1. Atualizar Ações
+            (portfolioState.acoes || []).forEach((item, i) => {
+                const total = item.qty * item.price;
+                const dy = item.price > 0 ? (item.dpa / item.price) * 100 : 0;
+                const annualIncome = total * (dy / 100);
+
+                segmentTotals.acoes.value += total;
+                segmentTotals.acoes.annualIncome += annualIncome;
+
+                const tQtyEl = document.getElementById(`acoes_targetQty_${i}`);
+                if (tQtyEl) tQtyEl.innerText = (item.targetQty || 0).toLocaleString('pt-BR');
+
+                const dyEl = document.getElementById(`acoes_dy_${i}`);
+                if (dyEl) dyEl.innerText = dy.toFixed(2).replace('.', ',') + '%';
+
+                const totEl = document.getElementById(`acoes_total_${i}`);
+                if (totEl) totEl.innerText = formatCurrency(total);
+            });
+
+            // 2. Atualizar FIIs
+            (portfolioState.fiis || []).forEach((item, i) => {
+                const total = item.qty * item.price;
+                const dyAnual = item.price > 0 ? ((item.monthlyIncome * 12) / item.price) * 100 : 0;
+                const annualIncome = total * (dyAnual / 100);
+
+                segmentTotals.fiis.value += total;
+                segmentTotals.fiis.annualIncome += annualIncome;
+
+                const tQtyEl = document.getElementById(`fiis_targetQty_${i}`);
+                if (tQtyEl) tQtyEl.innerText = (item.targetQty || 0).toLocaleString('pt-BR');
+
+                const dyEl = document.getElementById(`fiis_dy_${i}`);
+                if (dyEl) dyEl.innerText = dyAnual.toFixed(2).replace('.', ',') + '%';
+
+                const totEl = document.getElementById(`fiis_total_${i}`);
+                if (totEl) totEl.innerText = formatCurrency(total);
+            });
+
+            // 3. Atualizar ETFs
+            (portfolioState.etfs || []).forEach((item, i) => {
+                const total = item.qty * item.price;
+                const annualIncome = total * (item.yieldRate / 100);
+
+                segmentTotals.etfs.value += total;
+                segmentTotals.etfs.annualIncome += annualIncome;
+
+                const tQtyEl = document.getElementById(`etfs_targetQty_${i}`);
+                if (tQtyEl) tQtyEl.innerText = (item.targetQty || 0).toLocaleString('pt-BR');
+
+                const totEl = document.getElementById(`etfs_total_${i}`);
+                if (totEl) totEl.innerText = formatCurrency(total);
+            });
+
+            // 4. Atualizar Renda Fixa
+            (portfolioState.rendaFixa || []).forEach((item, i) => {
+                const total = item.qty * item.price;
+                const annualIncome = total * (item.yieldRate / 100);
+
+                segmentTotals.rendaFixa.value += total;
+                segmentTotals.rendaFixa.annualIncome += annualIncome;
+
+                const tQtyEl = document.getElementById(`rendaFixa_targetQty_${i}`);
+                if (tQtyEl) tQtyEl.innerText = (item.targetQty || 0).toLocaleString('pt-BR');
+
+                const totEl = document.getElementById(`rendaFixa_total_${i}`);
+                if (totEl) totEl.innerText = formatCurrency(total);
+            });
+
+            // Consolidar Totais
+            Object.values(segmentTotals).forEach(s => {
+                totalPortfolioValue += s.value;
+                totalAnnualIncome += s.annualIncome;
+            });
+
+            const portfolioYieldAA = totalPortfolioValue > 0 ? (totalAnnualIncome / totalPortfolioValue) * 100 : 0;
+            const monthlyIncome = totalAnnualIncome / 12;
+
+            const elTotVal = document.getElementById('portfolioTotalValue');
+            if (elTotVal) elTotVal.innerText = formatCurrency(totalPortfolioValue);
+
+            const elYield = document.getElementById('portfolioWeightedYield');
+            if (elYield) elYield.innerText = portfolioYieldAA.toFixed(2).replace('.', ',') + '% a.a.';
+
+            const elMonthInc = document.getElementById('portfolioMonthlyIncome');
+            if (elMonthInc) elMonthInc.innerText = formatCurrency(monthlyIncome);
+
+            const elAnnInc = document.getElementById('portfolioAnnualIncome');
+            if (elAnnInc) elAnnInc.innerText = formatCurrency(totalAnnualIncome);
+
+            // Renderizar Tabela de Resumo dos Segmentos
+            let segmentSummaryHtml = '';
+            Object.values(segmentTotals).forEach(s => {
+                const share = totalPortfolioValue > 0 ? (s.value / totalPortfolioValue) * 100 : 0;
+                const segYield = s.value > 0 ? (s.annualIncome / s.value) * 100 : 0;
+                const metaVal = targetWealth * (s.metaPct / 100);
+
+                segmentSummaryHtml += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${s.label}</td>
+                        <td class="py-2.5 px-3">${formatCurrency(s.value)}</td>
+                        <td class="py-2.5 px-3 font-medium text-slate-700">${share.toFixed(2).replace('.', ',')}%</td>
+                        <td class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/30">${s.metaPct}%</td>
+                        <td class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/30">${formatCurrency(metaVal)}</td>
+                        <td class="py-2.5 px-3 font-bold text-blue-600">${segYield.toFixed(2).replace('.', ',')}% a.a.</td>
+                        <td class="py-2.5 px-3 text-emerald-600 font-semibold">${formatCurrency(s.annualIncome)}</td>
+                    </tr>
+                `;
+            });
+
+            const segTableBody = document.getElementById('segmentSummaryTableBody');
+            if (segTableBody) segTableBody.innerHTML = segmentSummaryHtml;
+
+            portfolioState.calculatedTotal = totalPortfolioValue;
+            portfolioState.calculatedYield = portfolioYieldAA;
+
+            saveToLocalStorage();
+        }
+
+        function renderPortfolio() {
+            if (document.getElementById('meta_acoes') && portfolioState.meta) {
+                document.getElementById('meta_acoes').value = portfolioState.meta.acoes;
+                document.getElementById('meta_fiis').value = portfolioState.meta.fiis;
+                document.getElementById('meta_etfs').value = portfolioState.meta.etfs;
+                document.getElementById('meta_rendaFixa').value = portfolioState.meta.rendaFixa;
+            }
+
+            // Render Ações
+            let acoesHtml = '';
+            portfolioState.acoes.forEach((item, i) => {
+                acoesHtml += `
+                    <tr>
+                        <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('acoes', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('acoes', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
+                        <td id="acoes_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50 font-bold text-indigo-900">0</td>
+                        <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('acoes', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.dpa}" step="0.01" oninput="updateAssetField('acoes', ${i}, 'dpa', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td id="acoes_dy_${i}" class="py-2 px-3 font-bold text-blue-600">0,00%</td>
+                        <td id="acoes_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
+                        <td class="py-2 px-3"><button type="button" onclick="removeAssetRow('acoes', ${i})" class="text-rose-500 font-bold hover:text-rose-700">✕</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('acoesTableBody').innerHTML = acoesHtml;
+
+            // Render FIIs
+            let fiisHtml = '';
+            portfolioState.fiis.forEach((item, i) => {
+                fiisHtml += `
+                    <tr>
+                        <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('fiis', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('fiis', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
+                        <td id="fiis_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50 font-bold text-indigo-900">0</td>
+                        <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('fiis', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.monthlyIncome}" step="0.01" oninput="updateAssetField('fiis', ${i}, 'monthlyIncome', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td id="fiis_dy_${i}" class="py-2 px-3 font-bold text-emerald-600">0,00%</td>
+                        <td id="fiis_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
+                        <td class="py-2 px-3"><button type="button" onclick="removeAssetRow('fiis', ${i})" class="text-rose-500 font-bold hover:text-rose-700">✕</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('fiisTableBody').innerHTML = fiisHtml;
+
+            // Render ETFs
+            let etfsHtml = '';
+            portfolioState.etfs.forEach((item, i) => {
+                etfsHtml += `
+                    <tr>
+                        <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('etfs', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('etfs', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
+                        <td id="etfs_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50 font-bold text-indigo-900">0</td>
+                        <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('etfs', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.yieldRate}" step="0.1" oninput="updateAssetField('etfs', ${i}, 'yieldRate', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td id="etfs_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
+                        <td class="py-2 px-3"><button type="button" onclick="removeAssetRow('etfs', ${i})" class="text-rose-500 font-bold hover:text-rose-700">✕</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('etfsTableBody').innerHTML = etfsHtml;
+
+            // Render Renda Fixa
+            let rfHtml = '';
+            portfolioState.rendaFixa.forEach((item, i) => {
+                rfHtml += `
+                    <tr>
+                        <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('rendaFixa', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('rendaFixa', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
+                        <td id="rendaFixa_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50 font-bold text-indigo-900">0</td>
+                        <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('rendaFixa', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.yieldRate}" step="0.1" oninput="updateAssetField('rendaFixa', ${i}, 'yieldRate', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td id="rendaFixa_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
+                        <td class="py-2 px-3"><button type="button" onclick="removeAssetRow('rendaFixa', ${i})" class="text-rose-500 font-bold hover:text-rose-700">✕</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('rendaFixaTableBody').innerHTML = rfHtml;
+        }
+
+        function applyPortfolioToTab1() {
+            const yieldRate = portfolioState.calculatedYield || 0;
+            const totalVal = portfolioState.calculatedTotal || 0;
+
+            document.getElementById('nomRate').value = yieldRate.toFixed(2);
+            if (totalVal > 0) {
+                document.getElementById('initialCap').value = Math.round(totalVal);
+            }
+
+            calculateAccumulation();
+            switchTab(1);
+            alert(`Sua carteira com rendimento médio de ${yieldRate.toFixed(2).replace('.', ',')}% a.a. e patrimônio de ${formatCurrency(totalVal)} foi aplicada com sucesso na Aba 1!`);
+        }
+
         window.onload = function() {
             const hasSavedData = loadFromLocalStorage();
             calculateAccumulation();
+            renderPortfolio();
+            calculateMetaQuantities();
             
             if (hasSavedData) {
                 calculateRetirement();
