@@ -20,17 +20,26 @@
 
     <!-- Header / Navbar -->
     <header class="bg-slate-900 text-white py-6 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">Simulador de Independência Financeira</h1>
                 <p class="text-slate-400 text-sm">Planejamento Real de Acumulação e Vivendo de Renda Passiva</p>
             </div>
-            <div class="flex items-center gap-2">
-                <span class="bg-emerald-600/30 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    Salvo no Navegador
-                </span>
-                <button type="button" onclick="clearSavedSettings()" title="Restaurar padrões" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">
+            
+            <!-- Controles de Projeto (Salvar / Carregar / Resetar) -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="exportProject()" title="Exportar todas as 3 abas para um arquivo JSON local" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1.5 rounded-full border border-blue-500 shadow-sm transition flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                    Salvar Projeto
+                </button>
+
+                <label title="Carregar projeto salvo de um arquivo JSON" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-full border border-indigo-500 shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Carregar Projeto
+                    <input type="file" id="importProjectFile" accept=".json" onchange="importProject(event)" class="hidden">
+                </label>
+
+                <button type="button" onclick="clearSavedSettings()" title="Restaurar valores padrões" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 transition">
                     Resetar
                 </button>
             </div>
@@ -650,7 +659,7 @@
     </main>
 
     <script>
-        const STORAGE_KEY = 'simulador_aposentadoria_config_v6';
+        const STORAGE_KEY = 'simulador_aposentadoria_config_v7';
 
         let accumChartInstance = null;
         let retChartInstance = null;
@@ -685,6 +694,13 @@
             ]
         };
 
+        const inputIds = [
+            'desiredIncome', 'initialCap', 'years', 'nomRate', 
+            'inflationRate', 'taxRate', 'incRate', 'tab2Cap', 
+            'tab2NomRate', 'tab2InflationRate', 'tab2TaxRate',
+            'tab2Withdrawal', 'tab2Horizon'
+        ];
+
         function formatCurrency(val) {
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
         }
@@ -693,18 +709,86 @@
             return ((val || 0) * 100).toFixed(2).replace('.', ',') + '%';
         }
 
-        function saveToLocalStorage() {
-            const inputsToSave = [
-                'desiredIncome', 'initialCap', 'years', 'nomRate', 
-                'inflationRate', 'taxRate', 'incRate', 'tab2Cap', 
-                'tab2NomRate', 'tab2InflationRate', 'tab2TaxRate',
-                'tab2Withdrawal', 'tab2Horizon'
-            ];
-            const data = { portfolioState };
-            inputsToSave.forEach(id => {
+        // ================= GERENCIAMENTO DE PROJETO (SALVAR & CARREGAR) =================
+
+        function getFullProjectData() {
+            const inputsData = {};
+            inputIds.forEach(id => {
                 const el = document.getElementById(id);
-                if (el) data[id] = el.value;
+                if (el) inputsData[id] = el.value;
             });
+
+            return {
+                app: "SimuladorAposentadoria",
+                version: "2.0",
+                exportedAt: new Date().toISOString(),
+                inputs: inputsData,
+                portfolioState: portfolioState
+            };
+        }
+
+        function exportProject() {
+            saveToLocalStorage();
+            const projectData = getFullProjectData();
+            const jsonString = JSON.stringify(projectData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `projeto_aposentadoria_${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importProject(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Restaurar Inputs
+                    const inputs = data.inputs || data;
+                    inputIds.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && inputs[id] !== undefined && inputs[id] !== null) {
+                            el.value = inputs[id];
+                        }
+                    });
+
+                    // Restaurar Carteira
+                    if (data.portfolioState) {
+                        portfolioState = data.portfolioState;
+                        if (!portfolioState.meta) {
+                            portfolioState.meta = { acoes: 30, fiis: 30, etfs: 20, rendaFixa: 20 };
+                        }
+                    }
+
+                    // Recalcular todas as Abas
+                    calculateAccumulation();
+                    renderPortfolio();
+                    calculateMetaQuantities();
+                    calculateRetirement();
+
+                    saveToLocalStorage();
+                    alert('Projeto carregado com sucesso! Os dados das 3 abas foram atualizados.');
+                } catch (err) {
+                    console.error("Erro ao carregar projeto:", err);
+                    alert('Ocorreu um erro ao ler o arquivo JSON. Certifique-se de que é um projeto válido do simulador.');
+                }
+                event.target.value = ''; // Limpar input de arquivo
+            };
+            reader.readAsText(file);
+        }
+
+        function saveToLocalStorage() {
+            const data = getFullProjectData();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
 
@@ -713,22 +797,22 @@
             if (!saved) return false;
             try {
                 const data = JSON.parse(saved);
-                for (const [id, val] of Object.entries(data)) {
-                    if (id === 'portfolioState' && val) {
-                        portfolioState = val;
-                        if (!portfolioState.meta) {
-                            portfolioState.meta = { acoes: 30, fiis: 30, etfs: 20, rendaFixa: 20 };
-                        }
-                        continue;
-                    }
+                const inputs = data.inputs || data;
+                inputIds.forEach(id => {
                     const el = document.getElementById(id);
-                    if (el && val !== undefined && val !== null) {
-                        el.value = val;
+                    if (el && inputs[id] !== undefined && inputs[id] !== null) {
+                        el.value = inputs[id];
+                    }
+                });
+                if (data.portfolioState) {
+                    portfolioState = data.portfolioState;
+                    if (!portfolioState.meta) {
+                        portfolioState.meta = { acoes: 30, fiis: 30, etfs: 20, rendaFixa: 20 };
                     }
                 }
                 return true;
             } catch (e) {
-                console.error("Erro ao carregar dados salvos:", e);
+                console.error("Erro ao carregar do LocalStorage:", e);
                 return false;
             }
         }
@@ -1283,32 +1367,74 @@
                     }
                 }
 
-                let importedCount = 0;
+                let addedCount = 0;
+                let updatedCount = 0;
+
                 items.forEach(raw => {
-                    const name = raw.name || raw.nome || raw.ticker || raw.ativo || raw.symbol || raw['ativo/ticker'] || raw['descrição'] || 'Ativo Importado';
+                    const rawName = raw.name || raw.nome || raw.ticker || raw.ativo || raw.symbol || raw['ativo/ticker'] || raw['descrição'] || 'Ativo Importado';
+                    const name = String(rawName).trim();
                     const qty = parseCleanFloat(raw.qty || raw.qtd || raw.quantidade || raw['qtd. atual'] || raw.quantity);
                     const price = parseCleanFloat(raw.price || raw.preco || raw.preço || raw.cotacao || raw.cotação || raw.valor || raw.val);
 
+                    // Busca se o ativo já existe na lista atual da classe
+                    const existingIndex = portfolioState[type].findIndex(
+                        item => item.name.trim().toUpperCase() === name.toUpperCase()
+                    );
+
                     if (type === 'acoes') {
                         const dpa = parseCleanFloat(raw.dpa || raw.rendimento || raw.yield || raw['dpa anual (r$)'] || raw.dividend);
-                        portfolioState.acoes.push({ name, qty, price, dpa, targetQty: 0 });
+                        if (existingIndex !== -1) {
+                            portfolioState.acoes[existingIndex].qty = qty;
+                            portfolioState.acoes[existingIndex].price = price;
+                            portfolioState.acoes[existingIndex].dpa = dpa;
+                            updatedCount++;
+                        } else {
+                            portfolioState.acoes.push({ name, qty, price, dpa, targetQty: 0 });
+                            addedCount++;
+                        }
                     } else if (type === 'fiis') {
                         const monthlyIncome = parseCleanFloat(raw.monthlyincome || raw.monthlyIncome || raw.rendimento || raw.yield || raw['rend. mensal/cota (r$)'] || raw.dpa);
-                        portfolioState.fiis.push({ name, qty, price, monthlyIncome, targetQty: 0 });
+                        if (existingIndex !== -1) {
+                            portfolioState.fiis[existingIndex].qty = qty;
+                            portfolioState.fiis[existingIndex].price = price;
+                            portfolioState.fiis[existingIndex].monthlyIncome = monthlyIncome;
+                            updatedCount++;
+                        } else {
+                            portfolioState.fiis.push({ name, qty, price, monthlyIncome, targetQty: 0 });
+                            addedCount++;
+                        }
                     } else if (type === 'etfs') {
                         const yieldRate = parseCleanFloat(raw.yieldrate || raw.yieldRate || raw.rendimento || raw.yield || raw.taxa || raw['rendimento bruto (% a.a.)']);
-                        portfolioState.etfs.push({ name, qty, price, yieldRate, targetQty: 0 });
+                        if (existingIndex !== -1) {
+                            portfolioState.etfs[existingIndex].qty = qty;
+                            portfolioState.etfs[existingIndex].price = price;
+                            portfolioState.etfs[existingIndex].yieldRate = yieldRate;
+                            updatedCount++;
+                        } else {
+                            portfolioState.etfs.push({ name, qty, price, yieldRate, targetQty: 0 });
+                            addedCount++;
+                        }
                     } else if (type === 'rendaFixa') {
                         const yieldRate = parseCleanFloat(raw.yieldrate || raw.yieldRate || raw.rendimento || raw.yield || raw.taxa || raw['rendimento bruto (% a.a.)']);
-                        portfolioState.rendaFixa.push({ name, qty, price, yieldRate, targetQty: 0 });
+                        if (existingIndex !== -1) {
+                            portfolioState.rendaFixa[existingIndex].qty = qty;
+                            portfolioState.rendaFixa[existingIndex].price = price;
+                            portfolioState.rendaFixa[existingIndex].yieldRate = yieldRate;
+                            updatedCount++;
+                        } else {
+                            portfolioState.rendaFixa.push({ name, qty, price, yieldRate, targetQty: 0 });
+                            addedCount++;
+                        }
                     }
-                    importedCount++;
                 });
 
-                if (importedCount > 0) {
+                if (addedCount > 0 || updatedCount > 0) {
                     renderPortfolio();
                     calculateMetaQuantities();
-                    alert(`${importedCount} ativo(s) importado(s) com sucesso para a categoria!`);
+                    let msg = [];
+                    if (addedCount > 0) msg.push(`${addedCount} novo(s) ativo(s) adicionado(s)`);
+                    if (updatedCount > 0) msg.push(`${updatedCount} ativo(s) atualizado(s)`);
+                    alert(`Importação concluída: ${msg.join(' e ')}!`);
                 } else {
                     alert('Nenhum ativo pôde ser extraído do arquivo. Verifique se o formato contém colunas com Nome, Quantidade e Preço.');
                 }
