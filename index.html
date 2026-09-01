@@ -496,7 +496,7 @@
                                 <th class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/50">Part. Meta (%)</th>
                                 <th class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/50">Valor Meta (R$)</th>
                                 <th class="py-2.5 px-3">Rendimento Ponderado (% a.a.)</th>
-                                <th class="py-2.5 px-3">Renda Passiva Anual (R$)</th>
+                                <th class="py-2.5 px-3">Renda Passiva Anual / Mensal (R$)</th>
                             </tr>
                         </thead>
                         <tbody id="segmentSummaryTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
@@ -515,6 +515,10 @@
                         <p class="text-xs text-slate-500">D.Y. Anual = (DPA / Valor da Ação) × 100</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button type="button" onclick="openImportHelpModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1" title="Instruções de Importação">
+                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Como Importar?
+                        </button>
                         <button type="button" onclick="triggerImport('acoes')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-blue-200 transition flex items-center gap-1">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Importar (CSV/TXT/JSON)
@@ -529,7 +533,7 @@
                             <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
                                 <th class="py-2 px-3">Ativo/Ticker</th>
                                 <th class="py-2 px-3">Qtd. Atual</th>
-                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold">Qtd. Meta</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold min-w-[180px]">Progresso / Qtd. Meta</th>
                                 <th class="py-2 px-3">Valor da Ação (R$)</th>
                                 <th class="py-2 px-3">DPA Anual (R$)</th>
                                 <th class="py-2 px-3 text-blue-600">D.Y. Anual (% a.a.)</th>
@@ -553,6 +557,10 @@
                         <p class="text-xs text-slate-500">Informe o rendimento mensal por cota.</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button type="button" onclick="openImportHelpModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1" title="Instruções de Importação">
+                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Como Importar?
+                        </button>
                         <button type="button" onclick="triggerImport('fiis')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-200 transition flex items-center gap-1">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Importar (CSV/TXT/JSON)
@@ -567,7 +575,7 @@
                             <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
                                 <th class="py-2 px-3">Ativo/Ticker</th>
                                 <th class="py-2 px-3">Qtd. Atual</th>
-                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold">Qtd. Meta</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold min-w-[180px]">Progresso / Qtd. Meta</th>
                                 <th class="py-2 px-3">Cotação (R$)</th>
                                 <th class="py-2 px-3">Rend. Mensal/Cota (R$)</th>
                                 <th class="py-2 px-3 text-emerald-600">D.Y. Anualizado (% a.a.)</th>
@@ -591,6 +599,10 @@
                         <p class="text-xs text-slate-500">Informe a cotação e rendimento esperado (% a.a.).</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button type="button" onclick="openImportHelpModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1" title="Instruções de Importação">
+                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Como Importar?
+                        </button>
                         <button type="button" onclick="triggerImport('etfs')" class="bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-purple-200 transition flex items-center gap-1">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Importar (CSV/TXT/JSON)
@@ -605,7 +617,7 @@
                             <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
                                 <th class="py-2 px-3">Ativo/Ticker</th>
                                 <th class="py-2 px-3">Qtd. Atual</th>
-                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold">Qtd. Meta</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold min-w-[180px]">Progresso / Qtd. Meta</th>
                                 <th class="py-2 px-3">Preço Unitário (R$)</th>
                                 <th class="py-2 px-3 text-purple-600">Rendimento Bruto (% a.a.)</th>
                                 <th class="py-2 px-3">Total Atual (R$)</th>
@@ -628,6 +640,10 @@
                         <p class="text-xs text-slate-500">Informe quantidade, valor unitário e taxa bruta (% a.a.).</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button type="button" onclick="openImportHelpModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1" title="Instruções de Importação">
+                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Como Importar?
+                        </button>
                         <button type="button" onclick="triggerImport('rendaFixa')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Importar (CSV/TXT/JSON)
@@ -642,7 +658,7 @@
                             <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
                                 <th class="py-2 px-3">Título / Descrição</th>
                                 <th class="py-2 px-3">Qtd. Atual</th>
-                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold">Qtd. Meta</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold min-w-[180px]">Progresso / Qtd. Meta</th>
                                 <th class="py-2 px-3">Valor Unitário (R$)</th>
                                 <th class="py-2 px-3 text-amber-600">Rendimento Bruto (% a.a.)</th>
                                 <th class="py-2 px-3">Total Atual (R$)</th>
@@ -658,8 +674,89 @@
 
     </main>
 
+    <!-- MODAL DE INSTRUÇÕES DE IMPORTAÇÃO -->
+    <div id="importHelpModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto border border-slate-200">
+            
+            <div class="flex justify-between items-center border-b pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="p-2 bg-amber-100 text-amber-800 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Como Criar o Arquivo de Importação</h3>
+                        <p class="text-xs text-slate-500">Formatos aceitos: CSV, TXT e JSON</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeImportHelpModal()" class="text-slate-400 hover:text-slate-700 p-1 font-bold text-xl rounded-lg">&times;</button>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-700">
+                <p>O simulador é capaz de ler arquivos nos formatos <strong>.CSV</strong>, <strong>.TXT</strong> ou <strong>.JSON</strong>. Você pode exportar diretamente de uma planilha Excel/Google Sheets ou criar manualmente em um bloco de notas.</p>
+
+                <!-- Estrutura CSV / TXT -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                    <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                        1. Formato CSV / TXT (Planilhas ou Bloco de Notas)
+                    </h4>
+                    <p>O arquivo deve ter um cabeçalho na primeira linha e utilizar como separador vírgula (<code>,</code>), ponto e vírgula (<code>;</code>) ou tabulação (<code>TAB</code>).</p>
+                    
+                    <p class="font-semibold text-slate-800 mt-2">Nomes das colunas reconhecidas (independente de maiúsculas/minúsculas):</p>
+                    <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                        <li><strong>Nome/Ticker:</strong> <code>nome</code>, <code>ticker</code>, <code>ativo</code>, <code>name</code>, <code>symbol</code> ou <code>descrição</code></li>
+                        <li><strong>Quantidade:</strong> <code>qtd</code>, <code>quantidade</code>, <code>qty</code>, <code>quantity</code></li>
+                        <li><strong>Preço/Cotação:</strong> <code>preco</code>, <code>cotacao</code>, <code>valor</code>, <code>price</code></li>
+                        <li><strong>Rendimento/DPA/Taxa:</strong> <code>dpa</code>, <code>rendimento</code>, <code>yield</code>, <code>taxa</code>, <code>monthlyincome</code></li>
+                    </ul>
+
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-lg font-mono text-[11px] overflow-x-auto mt-2">
+                        <div class="text-slate-400 border-b border-slate-800 pb-1 mb-1">// Exemplo de CSV para Ações (dpa = Dividendo por ação):</div>
+                        ticker,qtd,preco,dpa<br>
+                        PETR4,100,38.50,4.20<br>
+                        VALE3,50,62.00,5.50
+                    </div>
+
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-lg font-mono text-[11px] overflow-x-auto mt-2">
+                        <div class="text-slate-400 border-b border-slate-800 pb-1 mb-1">// Exemplo de CSV para FIIs (rendimento = R$/mês por cota):</div>
+                        ticker;qtd;cotacao;rendimento<br>
+                        HGLG11;20;162,00;1,10<br>
+                        KNCR11;30;102,00;1,00
+                    </div>
+                </div>
+
+                <!-- Estrutura JSON -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                    <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                        2. Formato JSON
+                    </h4>
+                    <p>Você também pode carregar uma lista de objetos diretamente em código JSON:</p>
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-lg font-mono text-[11px] overflow-x-auto">
+[<br>
+&nbsp;&nbsp;{ "name": "PETR4", "qty": 100, "price": 38.50, "dpa": 4.20 },<br>
+&nbsp;&nbsp;{ "name": "VALE3", "qty": 50, "price": 62.00, "dpa": 5.50 }<br>
+]
+                    </div>
+                </div>
+
+                <!-- Observação de Números -->
+                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px]">
+                    <strong>Nota sobre Formatação de Valores:</strong> O leitor aceita tanto vírgula quanto ponto decimal (ex: <code>38.50</code> ou <code>38,50</code>) e ignora o símbolo de moeda <code>R$</code> ou porcentagem <code>%</code> automaticamente.
+                </div>
+            </div>
+
+            <div class="pt-3 border-t flex justify-end">
+                <button type="button" onclick="closeImportHelpModal()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-5 py-2 rounded-xl text-xs transition">
+                    Entendi! Fechar
+                </button>
+            </div>
+
+        </div>
+    </div>
+
     <script>
-        const STORAGE_KEY = 'simulador_aposentadoria_config_v7';
+        const STORAGE_KEY = 'simulador_aposentadoria_config_v8';
 
         let accumChartInstance = null;
         let retChartInstance = null;
@@ -709,6 +806,47 @@
             return ((val || 0) * 100).toFixed(2).replace('.', ',') + '%';
         }
 
+        // ================= HELPER PARA FORMATAÇÃO DA COLUNA QTD. META =================
+
+        function formatMetaProgress(qty, targetQty) {
+            qty = parseFloat(qty) || 0;
+            targetQty = parseFloat(targetQty) || 0;
+
+            if (targetQty === 0) {
+                return `<span class="text-slate-400 font-normal">-</span>`;
+            }
+
+            const diff = targetQty - qty;
+
+            if (diff <= 0) {
+                return `
+                    <div class="my-1">
+                        <div class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full border border-emerald-300">
+                            <span>${qty}/${targetQty}</span>
+                            <span>🎉 Meta Atingida!</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="my-1">
+                    <div class="font-bold text-indigo-950 text-xs">${qty}/${targetQty}</div>
+                    <div class="text-[11px] text-amber-700 font-semibold">Falta: ${diff.toLocaleString('pt-BR')} cota(s)</div>
+                </div>
+            `;
+        }
+
+        // ================= FUNÇÕES DO MODAL DE AJUDA DA IMPORTAÇÃO =================
+
+        function openImportHelpModal() {
+            document.getElementById('importHelpModal').classList.remove('hidden');
+        }
+
+        function closeImportHelpModal() {
+            document.getElementById('importHelpModal').classList.add('hidden');
+        }
+
         // ================= GERENCIAMENTO DE PROJETO (SALVAR & CARREGAR) =================
 
         function getFullProjectData() {
@@ -720,7 +858,7 @@
 
             return {
                 app: "SimuladorAposentadoria",
-                version: "2.0",
+                version: "2.1",
                 exportedAt: new Date().toISOString(),
                 inputs: inputsData,
                 portfolioState: portfolioState
@@ -839,6 +977,14 @@
                 document.getElementById('tab2TaxRate').value = document.getElementById('taxRate').value;
                 document.getElementById('syncValuesText').innerText = `${formatCurrency(currentCalculations.finalReal)} (Real) / ${formatCurrency(currentCalculations.finalNominal)} (Nominal)`;
                 calculateRetirement();
+            }
+        }
+
+        function applyPortfolioToTab1() {
+            if (portfolioState.calculatedYield !== undefined) {
+                document.getElementById('nomRate').value = portfolioState.calculatedYield.toFixed(2);
+                calculateAccumulation();
+                alert(`Taxa de rendimento bruto da carteira (${portfolioState.calculatedYield.toFixed(2)}% a.a.) aplicada com sucesso à Aba 1!`);
             }
         }
 
@@ -1376,7 +1522,6 @@
                     const qty = parseCleanFloat(raw.qty || raw.qtd || raw.quantidade || raw['qtd. atual'] || raw.quantity);
                     const price = parseCleanFloat(raw.price || raw.preco || raw.preço || raw.cotacao || raw.cotação || raw.valor || raw.val);
 
-                    // Busca se o ativo já existe na lista atual da classe
                     const existingIndex = portfolioState[type].findIndex(
                         item => item.name.trim().toUpperCase() === name.toUpperCase()
                     );
@@ -1543,7 +1688,7 @@
                 segmentTotals.acoes.annualIncome += annualIncome;
 
                 const tQtyEl = document.getElementById(`acoes_targetQty_${i}`);
-                if (tQtyEl) tQtyEl.innerText = (item.targetQty || 0).toLocaleString('pt-BR');
+                if (tQtyEl) tQtyEl.innerHTML = formatMetaProgress(item.qty, item.targetQty);
 
                 const dyEl = document.getElementById(`acoes_dy_${i}`);
                 if (dyEl) dyEl.innerText = dy.toFixed(2).replace('.', ',') + '%';
@@ -1562,7 +1707,7 @@
                 segmentTotals.fiis.annualIncome += annualIncome;
 
                 const tQtyEl = document.getElementById(`fiis_targetQty_${i}`);
-                if (tQtyEl) tQtyEl.innerText = (item.targetQty || 0).toLocaleString('pt-BR');
+                if (tQtyEl) tQtyEl.innerHTML = formatMetaProgress(item.qty, item.targetQty);
 
                 const dyEl = document.getElementById(`fiis_dy_${i}`);
                 if (dyEl) dyEl.innerText = dyAnual.toFixed(2).replace('.', ',') + '%';
@@ -1580,7 +1725,7 @@
                 segmentTotals.etfs.annualIncome += annualIncome;
 
                 const tQtyEl = document.getElementById(`etfs_targetQty_${i}`);
-                if (tQtyEl) tQtyEl.innerText = (item.targetQty || 0).toLocaleString('pt-BR');
+                if (tQtyEl) tQtyEl.innerHTML = formatMetaProgress(item.qty, item.targetQty);
 
                 const totEl = document.getElementById(`etfs_total_${i}`);
                 if (totEl) totEl.innerText = formatCurrency(total);
@@ -1595,7 +1740,7 @@
                 segmentTotals.rendaFixa.annualIncome += annualIncome;
 
                 const tQtyEl = document.getElementById(`rendaFixa_targetQty_${i}`);
-                if (tQtyEl) tQtyEl.innerText = (item.targetQty || 0).toLocaleString('pt-BR');
+                if (tQtyEl) tQtyEl.innerHTML = formatMetaProgress(item.qty, item.targetQty);
 
                 const totEl = document.getElementById(`rendaFixa_total_${i}`);
                 if (totEl) totEl.innerText = formatCurrency(total);
@@ -1628,6 +1773,7 @@
                 const share = totalPortfolioValue > 0 ? (s.value / totalPortfolioValue) * 100 : 0;
                 const segYield = s.value > 0 ? (s.annualIncome / s.value) * 100 : 0;
                 const metaVal = targetWealth * (s.metaPct / 100);
+                const segMonthlyIncome = s.annualIncome / 12;
 
                 segmentSummaryHtml += `
                     <tr class="hover:bg-slate-50">
@@ -1637,7 +1783,10 @@
                         <td class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/30">${s.metaPct}%</td>
                         <td class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/30">${formatCurrency(metaVal)}</td>
                         <td class="py-2.5 px-3 font-bold text-blue-600">${segYield.toFixed(2).replace('.', ',')}% a.a.</td>
-                        <td class="py-2.5 px-3 text-emerald-600 font-semibold">${formatCurrency(s.annualIncome)}</td>
+                        <td class="py-2.5 px-3 text-emerald-600 font-semibold">
+                            <div>${formatCurrency(s.annualIncome)} <span class="text-[10px] text-slate-500 font-normal">/ ano</span></div>
+                            <div class="text-[11px] text-emerald-700 font-medium">${formatCurrency(segMonthlyIncome)} <span class="text-[10px] text-slate-400 font-normal">/ mês</span></div>
+                        </td>
                     </tr>
                 `;
             });
@@ -1666,7 +1815,7 @@
                     <tr>
                         <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('acoes', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
                         <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('acoes', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
-                        <td id="acoes_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50 font-bold text-indigo-900">0</td>
+                        <td id="acoes_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50">0</td>
                         <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('acoes', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
                         <td class="py-2 px-3"><input type="number" value="${item.dpa}" step="0.01" oninput="updateAssetField('acoes', ${i}, 'dpa', this.value)" class="w-24 border rounded px-2 py-1"></td>
                         <td id="acoes_dy_${i}" class="py-2 px-3 font-bold text-blue-600">0,00%</td>
@@ -1684,7 +1833,7 @@
                     <tr>
                         <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('fiis', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
                         <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('fiis', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
-                        <td id="fiis_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50 font-bold text-indigo-900">0</td>
+                        <td id="fiis_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50">0</td>
                         <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('fiis', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
                         <td class="py-2 px-3"><input type="number" value="${item.monthlyIncome}" step="0.01" oninput="updateAssetField('fiis', ${i}, 'monthlyIncome', this.value)" class="w-24 border rounded px-2 py-1"></td>
                         <td id="fiis_dy_${i}" class="py-2 px-3 font-bold text-emerald-600">0,00%</td>
@@ -1702,7 +1851,7 @@
                     <tr>
                         <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('etfs', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
                         <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('etfs', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
-                        <td id="etfs_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50 font-bold text-indigo-900">0</td>
+                        <td id="etfs_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50">0</td>
                         <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('etfs', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
                         <td class="py-2 px-3"><input type="number" value="${item.yieldRate}" step="0.1" oninput="updateAssetField('etfs', ${i}, 'yieldRate', this.value)" class="w-24 border rounded px-2 py-1"></td>
                         <td id="etfs_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
@@ -1713,13 +1862,13 @@
             document.getElementById('etfsTableBody').innerHTML = etfsHtml;
 
             // Render Renda Fixa
-            let rfHtml = '';
+            let rendaFixaHtml = '';
             portfolioState.rendaFixa.forEach((item, i) => {
-                rfHtml += `
+                rendaFixaHtml += `
                     <tr>
                         <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('rendaFixa', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
                         <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('rendaFixa', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
-                        <td id="rendaFixa_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50 font-bold text-indigo-900">0</td>
+                        <td id="rendaFixa_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50">0</td>
                         <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('rendaFixa', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
                         <td class="py-2 px-3"><input type="number" value="${item.yieldRate}" step="0.1" oninput="updateAssetField('rendaFixa', ${i}, 'yieldRate', this.value)" class="w-24 border rounded px-2 py-1"></td>
                         <td id="rendaFixa_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
@@ -1727,33 +1876,23 @@
                     </tr>
                 `;
             });
-            document.getElementById('rendaFixaTableBody').innerHTML = rfHtml;
-        }
+            document.getElementById('rendaFixaTableBody').innerHTML = rendaFixaHtml;
 
-        function applyPortfolioToTab1() {
-            const yieldRate = portfolioState.calculatedYield || 0;
-            const totalVal = portfolioState.calculatedTotal || 0;
-
-            document.getElementById('nomRate').value = yieldRate.toFixed(2);
-            if (totalVal > 0) {
-                document.getElementById('initialCap').value = Math.round(totalVal);
-            }
-
-            calculateAccumulation();
-            switchTab(1);
-            alert(`Sua carteira com rendimento médio de ${yieldRate.toFixed(2).replace('.', ',')}% a.a. e patrimônio de ${formatCurrency(totalVal)} foi aplicada com sucesso na Aba 1!`);
-        }
-
-        window.onload = function() {
-            const hasSavedData = loadFromLocalStorage();
-            calculateAccumulation();
-            renderPortfolio();
             calculateMetaQuantities();
-            
-            if (hasSavedData) {
+        }
+
+        // Window onload initialization
+        window.onload = function() {
+            if (!loadFromLocalStorage()) {
+                calculateAccumulation();
+                renderPortfolio();
+                calculateMetaQuantities();
                 calculateRetirement();
             } else {
-                syncFromTab1();
+                calculateAccumulation();
+                renderPortfolio();
+                calculateMetaQuantities();
+                calculateRetirement();
             }
         };
     </script>
