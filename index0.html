@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Avançado de Aposentadoria & Independência Financeira</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .tab-active {
+            border-bottom: 3px solid #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 text-white py-6 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">Simulador de Independência Financeira</h1>
+                <p class="text-slate-400 text-sm">Planejamento Real de Acumulação e Vivendo de Renda Passiva</p>
+            </div>
+            
+            <!-- Controles de Projeto (Salvar / Carregar / Resetar) -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="exportProject()" title="Exportar todas as 3 abas para um arquivo JSON local" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1.5 rounded-full border border-blue-500 shadow-sm transition flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                    Salvar Projeto
+                </button>
+
+                <label title="Carregar projeto salvo de um arquivo JSON" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-full border border-indigo-500 shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Carregar Projeto
+                    <input type="file" id="importProjectFile" accept=".json" onchange="importProject(event)" class="hidden">
+                </label>
+
+                <button type="button" onclick="clearSavedSettings()" title="Restaurar valores padrões" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 transition">
+                    Resetar
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 flex gap-4 sm:gap-8 overflow-x-auto">
+            <button id="btnTab1" onclick="switchTab(1)" class="py-4 px-2 tab-active transition-all flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                1. Acumulação
+            </button>
+            <button id="btnTab2" onclick="switchTab(2)" class="py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                2. Usufruto (Renda)
+            </button>
+            <button id="btnTab3" onclick="switchTab(3)" class="py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                3. Montar Carteira
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- TAB 1: ACUMULAÇÃO -->
+        <div id="tab1Content" class="space-y-8">
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                <!-- Input Form Panel -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-3 flex items-center justify-between">
+                        <span>Parâmetros de Entrada</span>
+                        <span class="text-xs font-normal text-slate-500">Valores Atuais</span>
+                    </h2>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Renda Passiva Mensal Desejada (Valores de Hoje)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-medium">R$</span>
+                            <input type="number" id="desiredIncome" value="5000" step="500" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 font-semibold" oninput="calculateAccumulation()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Patrimônio Inicial Já Acumulado</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-medium">R$</span>
+                            <input type="number" id="initialCap" value="10000" step="1000" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Prazo de Acumulação (Anos)</label>
+                        <input type="number" id="years" value="20" min="0.1" max="50" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Rendimento Bruto (% a.a.)</label>
+                            <input type="number" id="nomRate" value="10.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Inflação Estimada (% a.a.)</label>
+                            <input type="number" id="inflationRate" value="4.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Imposto de Renda (%)</label>
+                            <input type="number" id="taxRate" value="15.0" step="0.5" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Incremento Anual Aportes (%)</label>
+                            <input type="number" id="incRate" value="4.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateAccumulation()">
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-between gap-2">
+                        <div class="text-xs text-blue-800">
+                            <strong>Sugestão:</strong> Reajuste os aportes pela inflação para manter o esforço real constante.
+                        </div>
+                        <button type="button" onclick="useSuggestedIncrement()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-2 py-1 rounded transition">
+                            Copiar Inflação
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Indicator Cards & Tables -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-blue-600 text-white p-5 rounded-2xl shadow-sm">
+                            <span class="text-xs font-medium uppercase tracking-wider text-blue-200">Aporte Mensal Inicial (Ano 1)</span>
+                            <div class="text-3xl font-extrabold mt-1" id="cardPmt1">R$ 0,00</div>
+                            <p class="text-xs text-blue-100 mt-2" id="cardPmtDesc">Reajustado anualmente para cobrir a inflação.</p>
+                        </div>
+
+                        <div class="bg-emerald-600 text-white p-5 rounded-2xl shadow-sm">
+                            <span class="text-xs font-medium uppercase tracking-wider text-emerald-200">Saldo Obtido ao Final (Banco)</span>
+                            <div class="text-3xl font-extrabold mt-1" id="cardTargetNominal">R$ 0,00</div>
+                            <p class="text-xs text-emerald-100 mt-2">Equivale a <strong id="cardTargetReal">R$ 0,00</strong> em poder de compra de hoje.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Detalhamento das Taxas de Juros</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-slate-100 text-slate-600 text-xs uppercase font-semibold">
+                                    <tr>
+                                        <th class="py-2 px-3">Métrica</th>
+                                        <th class="py-2 px-3">Taxa Anual (a.a.)</th>
+                                        <th class="py-2 px-3">Taxa Mensal (a.m.)</th>
+                                        <th class="py-2 px-3">Significado Didático</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700 text-xs">
+                                    <tr>
+                                        <td class="py-2 px-3 font-semibold text-slate-900">Rendimento Bruto</td>
+                                        <td class="py-2 px-3" id="rateNomBrutaAA">10,00%</td>
+                                        <td class="py-2 px-3" id="rateNomBrutaAM">0,80%</td>
+                                        <td class="py-2 px-3 text-slate-500">Taxa contratada ou média da carteira</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 font-semibold text-slate-900">Rendimento Líquido (s/ IR)</td>
+                                        <td class="py-2 px-3" id="rateNomLiqAA">8,50%</td>
+                                        <td class="py-2 px-3" id="rateNomLiqAM">0,68%</td>
+                                        <td class="py-2 px-3 text-slate-500">O que realmente entra no seu saldo</td>
+                                    </tr>
+                                    <tr class="bg-blue-50/50 font-medium">
+                                        <td class="py-2 px-3 font-bold text-blue-900">Rendimento Real (Ganho Acima da Inflação)</td>
+                                        <td class="py-2 px-3 font-bold text-blue-900" id="rateRealAA">4,33%</td>
+                                        <td class="py-2 px-3 font-bold text-blue-900" id="rateRealAM">0,35%</td>
+                                        <td class="py-2 px-3 text-blue-800">Crescimento efetivo do seu Poder de Compra</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-amber-900 text-sm space-y-2">
+                        <div class="font-bold flex items-center gap-2 text-amber-950">
+                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Dica de Integração com a Aba 3
+                        </div>
+                        <p class="text-xs text-amber-900/90">
+                            Em vez de estimar uma taxa manualmente, acesse a <strong>Aba 3 (Montar Carteira)</strong> para montar a sua carteira por ativos e configurar metas de alocação por segmento!
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Visual Chart -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-900 mb-4">Evolução do Patrimônio ao Longo do Tempo</h3>
+                <div class="h-80">
+                    <canvas id="accumulationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Year-by-Year Table -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-slate-900">Tabela Didática de Evolução Anual</h3>
+                    <p class="text-xs text-slate-500">Crescimento do saldo nominal (banco) vs. saldo real (poder de compra).</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold border-b">
+                                <th class="py-3 px-3">Ano</th>
+                                <th class="py-3 px-3">Aporte Mensal (Nominal)</th>
+                                <th class="py-3 px-3">Aporte Mensal (Real)</th>
+                                <th class="py-3 px-3">Total Investido</th>
+                                <th class="py-3 px-3">Juros Acumulados</th>
+                                <th class="py-3 px-3">Saldo Nominal (Banco)</th>
+                                <th class="py-3 px-3 bg-blue-50 text-blue-900">Saldo Real (Poder de Compra)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accumulationTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- TAB 2: USUFRUTO & RETIRADAS -->
+        <div id="tab2Content" class="space-y-8 hidden">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Tab 2 Input Form -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5">
+                    <h2 class="text-xl font-bold text-slate-900 border-b pb-3 flex items-center justify-between">
+                        <span>Configurar Retirada Mensal</span>
+                        <span class="text-xs font-normal text-slate-500">Valores de Hoje</span>
+                    </h2>
+
+                    <div id="syncBadge" class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-center justify-between">
+                        <div>
+                            <span class="font-bold block"> Patrimônio Sincronizado da Aba 1:</span>
+                            <span id="syncValuesText">R$ 0,00 (Real) / R$ 0,00 (Nominal)</span>
+                        </div>
+                        <button type="button" onclick="syncFromTab1()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-2 py-1 rounded transition">
+                            Re-sincronizar
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Patrimônio Inicial de Usufruto (Poder de Compra Atual)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-medium">R$</span>
+                            <input type="number" id="tab2Cap" value="0" step="50000" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 font-semibold" oninput="calculateRetirement()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Rendimento Bruto da Carteira (% a.a.)</label>
+                        <input type="number" id="tab2NomRate" value="10.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 font-semibold" oninput="calculateRetirement()">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Inflação (% a.a.)</label>
+                            <input type="number" id="tab2InflationRate" value="4.0" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateRetirement()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Imposto de Renda (%)</label>
+                            <input type="number" id="tab2TaxRate" value="15.0" step="0.5" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateRetirement()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Retirada Mensal Desejada (R$ em Poder de Compra)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-medium">R$</span>
+                            <input type="number" id="tab2Withdrawal" value="5000" step="200" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900 font-bold text-blue-600" oninput="calculateRetirement()">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Estratégias Rápidas de Retirada</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick="setPresetWithdrawal('perpetual')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium py-2 px-2 rounded-lg border border-slate-300 text-center">
+                                ♾️ 100% Renda Perpétua
+                            </button>
+                            <button type="button" onclick="setPresetWithdrawal('rule4p')" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-900 font-semibold py-2 px-2 rounded-lg border border-purple-300 text-center">
+                                🎯 Regra dos 4% (Trinity)
+                            </button>
+                            <button type="button" onclick="setPresetWithdrawal('growth')" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-medium py-2 px-2 rounded-lg border border-emerald-300 text-center">
+                                📈 Crescimento (+20% Reapl.)
+                            </button>
+                            <button type="button" onclick="setPresetWithdrawal('depletion')" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-800 font-medium py-2 px-2 rounded-lg border border-rose-300 text-center">
+                                📉 Consumo (+25% Retirada)
+                            </button>
+                        </div>
+                        <!-- Painel Dinâmico de Explicação da Estratégia Selecionada -->
+                        <div id="presetExplanation" class="hidden p-3 rounded-lg text-xs transition-all mt-2"></div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Horizonte de Simulação (Anos)</label>
+                        <input type="number" id="tab2Horizon" value="30" min="5" max="60" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-900" oninput="calculateRetirement()">
+                    </div>
+
+                </div>
+
+                <!-- Tab 2 Status & Dynamic Analysis -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <div id="statusCardContainer" class="bg-emerald-600 text-white p-6 rounded-2xl shadow-sm transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-200" id="statusCardTag">Estratégia Sustentável</span>
+                            <span class="bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-medium" id="statusBadge">Renda Perpétua</span>
+                        </div>
+                        <div class="text-3xl font-extrabold mt-2" id="statusCardTitle">Patrimônio Preservado Indefinidamente</div>
+                        <p class="text-xs text-emerald-100 mt-2" id="statusCardDesc">Você está sacando exatamente os juros reais gerados pelo seu patrimônio.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Juros Reais Gerados/Mês</span>
+                            <div class="text-xl font-bold text-slate-900 mt-1" id="cardMonthlyRealInterest">R$ 0,00</div>
+                            <p class="text-xs text-slate-400 mt-1">Rendimento acima da inflação</p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Retirada Solicitada/Mês</span>
+                            <div class="text-xl font-bold text-blue-600 mt-1" id="cardMonthlyWithdrawal">R$ 0,00</div>
+                            <p class="text-xs text-slate-400 mt-1">Poder de compra mensal</p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-slate-200">
+                            <span class="text-xs font-semibold text-slate-500 uppercase">Sobra / Reaplicação Mensal</span>
+                            <div class="text-xl font-bold mt-1" id="cardMonthlyNetFlow">R$ 0,00</div>
+                            <p class="text-xs text-slate-400 mt-1" id="cardMonthlyNetFlowLabel">Incorporado ao capital real</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Projection Chart with Horizon Filters -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Projeção Dinâmica do Patrimônio na Aposentadoria</h3>
+                        <p class="text-xs text-slate-500">Comparação visual entre o Cenário Selecionado vs. Renda Perpétua vs. Efeito Inflacionário Nominal.</p>
+                    </div>
+                    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-medium">
+                        <button type="button" onclick="setChartFilter(5)" id="btnFilter5" class="px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600">5 Anos</button>
+                        <button type="button" onclick="setChartFilter(10)" id="btnFilter10" class="px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600">10 Anos</button>
+                        <button type="button" onclick="setChartFilter(15)" id="btnFilter15" class="px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600">15 Anos</button>
+                        <button type="button" onclick="setChartFilter('max')" id="btnFilterMax" class="px-3 py-1.5 rounded-lg transition bg-white text-blue-600 shadow-sm font-bold">Máximo</button>
+                    </div>
+                </div>
+                <div class="h-80">
+                    <canvas id="retirementChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Year-by-Year Withdrawal Table -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-slate-900">Tabela Didática de Evolução do Usufruto</h3>
+                    <p class="text-xs text-slate-500">Detalhes dos juros gerados, retiradas mensais/anuais e saldo remanescente.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold border-b">
+                                <th class="py-3 px-3">Ano</th>
+                                <th class="py-3 px-3">Saldo Inicial Real</th>
+                                <th class="py-3 px-3">Juros Reais Gerados</th>
+                                <th class="py-3 px-3 bg-blue-50/80 text-blue-900">Retirada Mensal (Real e Nominal)</th>
+                                <th class="py-3 px-3 text-blue-900">Retirada Anual (Real)</th>
+                                <th class="py-3 px-3">Sobras / Déficit (Real)</th>
+                                <th class="py-3 px-3 bg-emerald-50 text-emerald-900">Saldo Final Real</th>
+                                <th class="py-3 px-3 font-bold text-blue-900">Saldo Final Nominal (Banco)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="retirementTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- TAB 3: CARTEIRA DE INVESTIMENTOS -->
+        <div id="tab3Content" class="space-y-8 hidden">
+            
+            <!-- Resumo Geral da Carteira e Botoes de Acao -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Resumo da Carteira de Investimentos</h2>
+                        <p class="text-xs text-slate-500">Cálculo de média ponderada por ativo, classe de investimento e metas de acúmulo.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="toggleMetaPanel()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            🎯 Configurar Meta de Alocação (%)
+                        </button>
+                        <button type="button" onclick="applyPortfolioToTab1()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Aplicar à Aba 1
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PAINEL DE CONFIGURAÇÃO DA META DE ALOCAÇÃO (%) -->
+                <div id="metaPanel" class="bg-slate-900 text-white p-6 rounded-2xl space-y-4 border border-slate-800 transition-all">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <div>
+                            <h3 class="text-base font-bold text-indigo-300 flex items-center gap-2">
+                                🎯 Meta de Alocação por Segmento (%)
+                            </h3>
+                            <p class="text-xs text-slate-400">Defina o percentual do patrimônio acumulado final da <strong>Aba 1</strong> destinado a cada segmento.</p>
+                        </div>
+                        <span id="targetWealthBadge" class="bg-indigo-900/60 text-indigo-200 border border-indigo-700/50 text-xs font-bold px-3 py-1 rounded-lg">
+                            Patrimônio Meta (Aba 1): R$ 0,00
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Ações (%)</label>
+                            <input type="number" id="meta_acoes" value="30" min="0" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="calculateMetaQuantities()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">FIIs (%)</label>
+                            <input type="number" id="meta_fiis" value="30" min="0" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="calculateMetaQuantities()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">ETFs (%)</label>
+                            <input type="number" id="meta_etfs" value="20" min="0" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="calculateMetaQuantities()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Renda Fixa (%)</label>
+                            <input type="number" id="meta_rendaFixa" value="20" min="0" max="100" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" oninput="calculateMetaQuantities()">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
+                        <div class="text-xs text-slate-300 flex items-center gap-2">
+                            <span>Soma das Metas: <strong id="metaTotalPct" class="text-emerald-400 text-sm">100%</strong></span>
+                            <span class="text-slate-500">|</span>
+                            <span class="text-slate-400">Regra: Capital igual por ativo no segmento com arredondamento de cotas para cima.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div class="bg-slate-900 text-white p-4 rounded-xl">
+                        <span class="text-xs font-semibold uppercase text-slate-400">Patrimônio Atual</span>
+                        <div class="text-2xl font-extrabold mt-1" id="portfolioTotalValue">R$ 0,00</div>
+                        <p class="text-[11px] text-slate-400 mt-1">Soma dos ativos atuais</p>
+                    </div>
+                    <div class="bg-blue-600 text-white p-4 rounded-xl">
+                        <span class="text-xs font-semibold uppercase text-blue-200">Rendimento Ponderado</span>
+                        <div class="text-2xl font-extrabold mt-1" id="portfolioWeightedYield">0,00% a.a.</div>
+                        <p class="text-[11px] text-blue-100 mt-1">Taxa bruta consolidada</p>
+                    </div>
+                    <div class="bg-emerald-600 text-white p-4 rounded-xl">
+                        <span class="text-xs font-semibold uppercase text-emerald-200">Renda Passiva Bruta / Mês</span>
+                        <div class="text-2xl font-extrabold mt-1" id="portfolioMonthlyIncome">R$ 0,00</div>
+                        <p class="text-[11px] text-emerald-100 mt-1">Projeção mensal estimada</p>
+                    </div>
+                    <div class="bg-purple-600 text-white p-4 rounded-xl">
+                        <span class="text-xs font-semibold uppercase text-purple-200">Renda Passiva Bruta / Ano</span>
+                        <div class="text-2xl font-extrabold mt-1" id="portfolioAnnualIncome">R$ 0,00</div>
+                        <p class="text-[11px] text-purple-100 mt-1">Projeção anual total</p>
+                    </div>
+                </div>
+
+                <!-- Resumo por Segmento -->
+                <div class="overflow-x-auto pt-2">
+                    <h3 class="text-sm font-bold text-slate-900 mb-3">Consolidado por Classe de Ativo</h3>
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold">
+                                <th class="py-2.5 px-3">Segmento</th>
+                                <th class="py-2.5 px-3">Valor Atual (R$)</th>
+                                <th class="py-2.5 px-3">Part. Atual (%)</th>
+                                <th class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/50">Part. Meta (%)</th>
+                                <th class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/50">Valor Meta (R$)</th>
+                                <th class="py-2.5 px-3">Rendimento Ponderado (% a.a.)</th>
+                                <th class="py-2.5 px-3">Renda Passiva Anual / Mensal (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="segmentSummaryTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 1: AÇÕES -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
+                            1. Ações (Dividendos Anuais - DPA)
+                        </h3>
+                        <p class="text-xs text-slate-500">D.Y. Anual = (DPA / Valor da Ação) × 100</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="openImportHelpModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1" title="Instruções de Importação">
+                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Como Importar?
+                        </button>
+                        <button type="button" onclick="triggerImport('acoes')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-blue-200 transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Importar (CSV/TXT/JSON)
+                        </button>
+                        <button type="button" onclick="addAssetRow('acoes')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">+ Adicionar Ação</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
+                                <th class="py-2 px-3">Ativo/Ticker</th>
+                                <th class="py-2 px-3">Qtd. Atual</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold min-w-[180px]">Progresso / Qtd. Meta</th>
+                                <th class="py-2 px-3">Valor da Ação (R$)</th>
+                                <th class="py-2 px-3">DPA Anual (R$)</th>
+                                <th class="py-2 px-3 text-blue-600">D.Y. Anual (% a.a.)</th>
+                                <th class="py-2 px-3">Total Atual (R$)</th>
+                                <th class="py-2 px-3 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="acoesTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 2: FUNDOS IMOBILIÁRIOS (FIIs) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span>
+                            2. Fundos Imobiliários - FIIs (Rendimento Mensal)
+                        </h3>
+                        <p class="text-xs text-slate-500">Informe o rendimento mensal por cota.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="openImportHelpModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1" title="Instruções de Importação">
+                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Como Importar?
+                        </button>
+                        <button type="button" onclick="triggerImport('fiis')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-200 transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Importar (CSV/TXT/JSON)
+                        </button>
+                        <button type="button" onclick="addAssetRow('fiis')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">+ Adicionar FII</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
+                                <th class="py-2 px-3">Ativo/Ticker</th>
+                                <th class="py-2 px-3">Qtd. Atual</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold min-w-[180px]">Progresso / Qtd. Meta</th>
+                                <th class="py-2 px-3">Cotação (R$)</th>
+                                <th class="py-2 px-3">Rend. Mensal/Cota (R$)</th>
+                                <th class="py-2 px-3 text-emerald-600">D.Y. Anualizado (% a.a.)</th>
+                                <th class="py-2 px-3">Total Atual (R$)</th>
+                                <th class="py-2 px-3 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="fiisTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 3: ETFs -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-purple-600 inline-block"></span>
+                            3. ETFs (Fundos de Índice)
+                        </h3>
+                        <p class="text-xs text-slate-500">Informe a cotação e rendimento esperado (% a.a.).</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="openImportHelpModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1" title="Instruções de Importação">
+                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Como Importar?
+                        </button>
+                        <button type="button" onclick="triggerImport('etfs')" class="bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-purple-200 transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Importar (CSV/TXT/JSON)
+                        </button>
+                        <button type="button" onclick="addAssetRow('etfs')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">+ Adicionar ETF</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
+                                <th class="py-2 px-3">Ativo/Ticker</th>
+                                <th class="py-2 px-3">Qtd. Atual</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold min-w-[180px]">Progresso / Qtd. Meta</th>
+                                <th class="py-2 px-3">Preço Unitário (R$)</th>
+                                <th class="py-2 px-3 text-purple-600">Rendimento Bruto (% a.a.)</th>
+                                <th class="py-2 px-3">Total Atual (R$)</th>
+                                <th class="py-2 px-3 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="etfsTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 4: RENDA FIXA -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+                            4. Renda Fixa (Tesouro, CDBs, LCI/LCA, Cri/Cra)
+                        </h3>
+                        <p class="text-xs text-slate-500">Informe quantidade, valor unitário e taxa bruta (% a.a.).</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="openImportHelpModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1" title="Instruções de Importação">
+                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Como Importar?
+                        </button>
+                        <button type="button" onclick="triggerImport('rendaFixa')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-amber-200 transition flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Importar (CSV/TXT/JSON)
+                        </button>
+                        <button type="button" onclick="addAssetRow('rendaFixa')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">+ Adicionar Renda Fixa</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold">
+                                <th class="py-2 px-3">Título / Descrição</th>
+                                <th class="py-2 px-3">Qtd. Atual</th>
+                                <th class="py-2 px-3 bg-indigo-50 text-indigo-900 font-bold min-w-[180px]">Progresso / Qtd. Meta</th>
+                                <th class="py-2 px-3">Valor Unitário (R$)</th>
+                                <th class="py-2 px-3 text-amber-600">Rendimento Bruto (% a.a.)</th>
+                                <th class="py-2 px-3">Total Atual (R$)</th>
+                                <th class="py-2 px-3 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="rendaFixaTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL DE INSTRUÇÕES DE IMPORTAÇÃO -->
+    <div id="importHelpModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto border border-slate-200">
+            
+            <div class="flex justify-between items-center border-b pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="p-2 bg-amber-100 text-amber-800 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Como Criar o Arquivo de Importação</h3>
+                        <p class="text-xs text-slate-500">Formatos aceitos: CSV, TXT e JSON</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeImportHelpModal()" class="text-slate-400 hover:text-slate-700 p-1 font-bold text-xl rounded-lg">&times;</button>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-700">
+                <p>O simulador é capaz de ler arquivos nos formatos <strong>.CSV</strong>, <strong>.TXT</strong> ou <strong>.JSON</strong>. Você pode exportar diretamente de uma planilha Excel/Google Sheets ou criar manualmente em um bloco de notas.</p>
+
+                <!-- Estrutura CSV / TXT -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                    <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                        1. Formato CSV / TXT (Planilhas ou Bloco de Notas)
+                    </h4>
+                    <p>O arquivo deve ter um cabeçalho na primeira linha e utilizar como separador vírgula (<code>,</code>), ponto e vírgula (<code>;</code>) ou tabulação (<code>TAB</code>).</p>
+                    
+                    <p class="font-semibold text-slate-800 mt-2">Nomes das colunas reconhecidas (independente de maiúsculas/minúsculas):</p>
+                    <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                        <li><strong>Nome/Ticker:</strong> <code>nome</code>, <code>ticker</code>, <code>ativo</code>, <code>name</code>, <code>symbol</code> ou <code>descrição</code></li>
+                        <li><strong>Quantidade:</strong> <code>qtd</code>, <code>quantidade</code>, <code>qty</code>, <code>quantity</code></li>
+                        <li><strong>Preço/Cotação:</strong> <code>preco</code>, <code>cotacao</code>, <code>valor</code>, <code>price</code></li>
+                        <li><strong>Rendimento/DPA/Taxa:</strong> <code>dpa</code>, <code>rendimento</code>, <code>yield</code>, <code>taxa</code>, <code>monthlyincome</code></li>
+                    </ul>
+
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-lg font-mono text-[11px] overflow-x-auto mt-2">
+                        <div class="text-slate-400 border-b border-slate-800 pb-1 mb-1">// Exemplo de CSV para Ações (dpa = Dividendo por ação):</div>
+                        ticker,qtd,preco,dpa<br>
+                        PETR4,100,38.50,4.20<br>
+                        VALE3,50,62.00,5.50
+                    </div>
+
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-lg font-mono text-[11px] overflow-x-auto mt-2">
+                        <div class="text-slate-400 border-b border-slate-800 pb-1 mb-1">// Exemplo de CSV para FIIs (rendimento = R$/mês por cota):</div>
+                        ticker;qtd;cotacao;rendimento<br>
+                        HGLG11;20;162,00;1,10<br>
+                        KNCR11;30;102,00;1,00
+                    </div>
+                </div>
+
+                <!-- Estrutura JSON -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                    <h4 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                        2. Formato JSON
+                    </h4>
+                    <p>Você também pode carregar uma lista de objetos diretamente em código JSON:</p>
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-lg font-mono text-[11px] overflow-x-auto">
+[<br>
+&nbsp;&nbsp;{ "name": "PETR4", "qty": 100, "price": 38.50, "dpa": 4.20 },<br>
+&nbsp;&nbsp;{ "name": "VALE3", "qty": 50, "price": 62.00, "dpa": 5.50 }<br>
+]
+                    </div>
+                </div>
+
+                <!-- Observação de Números -->
+                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px]">
+                    <strong>Nota sobre Formatação de Valores:</strong> O leitor aceita tanto vírgula quanto ponto decimal (ex: <code>38.50</code> ou <code>38,50</code>) e ignora o símbolo de moeda <code>R$</code> ou porcentagem <code>%</code> automaticamente.
+                </div>
+            </div>
+
+            <div class="pt-3 border-t flex justify-end">
+                <button type="button" onclick="closeImportHelpModal()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-5 py-2 rounded-xl text-xs transition">
+                    Entendi! Fechar
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'simulador_aposentadoria_config_v8';
+
+        let accumChartInstance = null;
+        let retChartInstance = null;
+        let currentCalculations = {};
+
+        // Data for Aba 2 chart
+        let currentRetData = { labels: [], selectedReal: [], perpetualReal: [], nominalBank: [] };
+        let activeChartFilter = 'max';
+
+        // Initial Sample Data for Tab 3 Portfolio
+        let portfolioState = {
+            meta: {
+                acoes: 30,
+                fiis: 30,
+                etfs: 20,
+                rendaFixa: 20
+            },
+            acoes: [
+                { name: 'PETR4', qty: 100, price: 38.50, dpa: 4.20, targetQty: 0 },
+                { name: 'VALE3', qty: 50, price: 62.00, dpa: 5.50, targetQty: 0 }
+            ],
+            fiis: [
+                { name: 'HGLG11', qty: 20, price: 162.00, monthlyIncome: 1.10, targetQty: 0 },
+                { name: 'KNCR11', qty: 30, price: 102.00, monthlyIncome: 1.00, targetQty: 0 }
+            ],
+            etfs: [
+                { name: 'IVVB11', qty: 15, price: 310.00, yieldRate: 11.50, targetQty: 0 }
+            ],
+            rendaFixa: [
+                { name: 'Tesouro IPCA+ 2035', qty: 5, price: 3200.00, yieldRate: 10.20, targetQty: 0 },
+                { name: 'CDB 110% CDI', qty: 1, price: 10000.00, yieldRate: 11.50, targetQty: 0 }
+            ]
+        };
+
+        const inputIds = [
+            'desiredIncome', 'initialCap', 'years', 'nomRate', 
+            'inflationRate', 'taxRate', 'incRate', 'tab2Cap', 
+            'tab2NomRate', 'tab2InflationRate', 'tab2TaxRate',
+            'tab2Withdrawal', 'tab2Horizon'
+        ];
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+        }
+
+        function formatPercent(val) {
+            return ((val || 0) * 100).toFixed(2).replace('.', ',') + '%';
+        }
+
+        // ================= HELPER PARA FORMATAÇÃO DA COLUNA QTD. META =================
+
+        function formatMetaProgress(qty, targetQty) {
+            qty = parseFloat(qty) || 0;
+            targetQty = parseFloat(targetQty) || 0;
+
+            if (targetQty === 0) {
+                return `<span class="text-slate-400 font-normal">-</span>`;
+            }
+
+            const diff = targetQty - qty;
+
+            if (diff <= 0) {
+                return `
+                    <div class="my-1">
+                        <div class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full border border-emerald-300">
+                            <span>${qty}/${targetQty}</span>
+                            <span>🎉 Meta Atingida!</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="my-1">
+                    <div class="font-bold text-indigo-950 text-xs">${qty}/${targetQty}</div>
+                    <div class="text-[11px] text-amber-700 font-semibold">Falta: ${diff.toLocaleString('pt-BR')} cota(s)</div>
+                </div>
+            `;
+        }
+
+        // ================= FUNÇÕES DO MODAL DE AJUDA DA IMPORTAÇÃO =================
+
+        function openImportHelpModal() {
+            document.getElementById('importHelpModal').classList.remove('hidden');
+        }
+
+        function closeImportHelpModal() {
+            document.getElementById('importHelpModal').classList.add('hidden');
+        }
+
+        // ================= GERENCIAMENTO DE PROJETO (SALVAR & CARREGAR) =================
+
+        function getFullProjectData() {
+            const inputsData = {};
+            inputIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) inputsData[id] = el.value;
+            });
+
+            return {
+                app: "SimuladorAposentadoria",
+                version: "2.1",
+                exportedAt: new Date().toISOString(),
+                inputs: inputsData,
+                portfolioState: portfolioState
+            };
+        }
+
+        function exportProject() {
+            saveToLocalStorage();
+            const projectData = getFullProjectData();
+            const jsonString = JSON.stringify(projectData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `projeto_aposentadoria_${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importProject(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Restaurar Inputs
+                    const inputs = data.inputs || data;
+                    inputIds.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && inputs[id] !== undefined && inputs[id] !== null) {
+                            el.value = inputs[id];
+                        }
+                    });
+
+                    // Restaurar Carteira
+                    if (data.portfolioState) {
+                        portfolioState = data.portfolioState;
+                        if (!portfolioState.meta) {
+                            portfolioState.meta = { acoes: 30, fiis: 30, etfs: 20, rendaFixa: 20 };
+                        }
+                    }
+
+                    // Recalcular todas as Abas
+                    calculateAccumulation();
+                    renderPortfolio();
+                    calculateMetaQuantities();
+                    calculateRetirement();
+
+                    saveToLocalStorage();
+                    alert('Projeto carregado com sucesso! Os dados das 3 abas foram atualizados.');
+                } catch (err) {
+                    console.error("Erro ao carregar projeto:", err);
+                    alert('Ocorreu um erro ao ler o arquivo JSON. Certifique-se de que é um projeto válido do simulador.');
+                }
+                event.target.value = ''; // Limpar input de arquivo
+            };
+            reader.readAsText(file);
+        }
+
+        function saveToLocalStorage() {
+            const data = getFullProjectData();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return false;
+            try {
+                const data = JSON.parse(saved);
+                const inputs = data.inputs || data;
+                inputIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && inputs[id] !== undefined && inputs[id] !== null) {
+                        el.value = inputs[id];
+                    }
+                });
+                if (data.portfolioState) {
+                    portfolioState = data.portfolioState;
+                    if (!portfolioState.meta) {
+                        portfolioState.meta = { acoes: 30, fiis: 30, etfs: 20, rendaFixa: 20 };
+                    }
+                }
+                return true;
+            } catch (e) {
+                console.error("Erro ao carregar do LocalStorage:", e);
+                return false;
+            }
+        }
+
+        function clearSavedSettings() {
+            if (confirm("Deseja restaurar todas as configurações para os valores padrões originais?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
+        function useSuggestedIncrement() {
+            const inflationVal = document.getElementById('inflationRate').value;
+            document.getElementById('incRate').value = inflationVal;
+            calculateAccumulation();
+        }
+
+        function syncFromTab1() {
+            if (currentCalculations.finalReal !== undefined) {
+                document.getElementById('tab2Cap').value = Math.round(currentCalculations.finalReal);
+                document.getElementById('tab2Withdrawal').value = Math.round(currentCalculations.desiredIncomeReal);
+                document.getElementById('tab2NomRate').value = document.getElementById('nomRate').value;
+                document.getElementById('tab2InflationRate').value = document.getElementById('inflationRate').value;
+                document.getElementById('tab2TaxRate').value = document.getElementById('taxRate').value;
+                document.getElementById('syncValuesText').innerText = `${formatCurrency(currentCalculations.finalReal)} (Real) / ${formatCurrency(currentCalculations.finalNominal)} (Nominal)`;
+                calculateRetirement();
+            }
+        }
+
+        function applyPortfolioToTab1() {
+            if (portfolioState.calculatedYield !== undefined) {
+                document.getElementById('nomRate').value = portfolioState.calculatedYield.toFixed(2);
+                calculateAccumulation();
+                alert(`Taxa de rendimento bruto da carteira (${portfolioState.calculatedYield.toFixed(2)}% a.a.) aplicada com sucesso à Aba 1!`);
+            }
+        }
+
+        function switchTab(tabIndex) {
+            const tab1 = document.getElementById('tab1Content');
+            const tab2 = document.getElementById('tab2Content');
+            const tab3 = document.getElementById('tab3Content');
+
+            const btn1 = document.getElementById('btnTab1');
+            const btn2 = document.getElementById('btnTab2');
+            const btn3 = document.getElementById('btnTab3');
+
+            const inactiveClass = "py-4 px-2 text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 whitespace-nowrap";
+            const activeClass = "py-4 px-2 tab-active transition-all flex items-center gap-2 whitespace-nowrap";
+
+            tab1.classList.add('hidden');
+            tab2.classList.add('hidden');
+            tab3.classList.add('hidden');
+
+            btn1.className = inactiveClass;
+            btn2.className = inactiveClass;
+            btn3.className = inactiveClass;
+
+            if (tabIndex === 1) {
+                tab1.classList.remove('hidden');
+                btn1.className = activeClass;
+            } else if (tabIndex === 2) {
+                tab2.classList.remove('hidden');
+                btn2.className = activeClass;
+                syncFromTab1();
+            } else if (tabIndex === 3) {
+                tab3.classList.remove('hidden');
+                btn3.className = activeClass;
+                calculateMetaQuantities();
+            }
+        }
+
+        function calculateAccumulation() {
+            const desiredIncomeReal = parseFloat(document.getElementById('desiredIncome').value) || 0;
+            const initialCap = parseFloat(document.getElementById('initialCap').value) || 0;
+            const yearsInput = parseFloat(document.getElementById('years').value) || 0.1;
+            const nomRateAA = (parseFloat(document.getElementById('nomRate').value) || 0) / 100;
+            const inflationAA = (parseFloat(document.getElementById('inflationRate').value) || 0) / 100;
+            const taxRate = (parseFloat(document.getElementById('taxRate').value) || 0) / 100;
+            const incRateAA = (parseFloat(document.getElementById('incRate').value) || 0) / 100;
+
+            const nomRateAM = Math.pow(1 + nomRateAA, 1/12) - 1;
+            const netNominalAA = nomRateAA * (1 - taxRate);
+            const netNominalAM = Math.pow(1 + netNominalAA, 1/12) - 1;
+            
+            const realRateAA = ((1 + netNominalAA) / (1 + inflationAA)) - 1;
+            const realRateAM = Math.pow(1 + realRateAA, 1/12) - 1;
+
+            const totalMonths = Math.max(1, Math.round(yearsInput * 12));
+            const years = totalMonths / 12;
+
+            const targetReal = realRateAM > 0 ? (desiredIncomeReal / realRateAM) : 0;
+            const targetNominal = targetReal * Math.pow(1 + inflationAA, years);
+
+            let K = 0;
+            for (let m = 1; m <= totalMonths; m++) {
+                let y = Math.floor((m - 1) / 12);
+                let pmtFactor = Math.pow(1 + incRateAA, y);
+                let compFactor = Math.pow(1 + netNominalAM, totalMonths - m);
+                K += pmtFactor * compFactor;
+            }
+
+            const futureP0Nom = initialCap * Math.pow(1 + netNominalAM, totalMonths);
+            let pmt1 = 0;
+            if (K > 0) {
+                pmt1 = (targetNominal - futureP0Nom) / K;
+                if (pmt1 < 0) pmt1 = 0;
+            }
+
+            let currNom = initialCap;
+            let totalInvestedNom = initialCap;
+            let tableRowsHtml = '';
+
+            let labels = ['Ano 0'];
+            let chartNominalData = [initialCap];
+            let chartRealData = [initialCap];
+            let chartInvestedData = [initialCap];
+
+            const fullYears = Math.floor(totalMonths / 12);
+            const remMonths = totalMonths % 12;
+
+            for (let y = 1; y <= fullYears; y++) {
+                let pmtNomYear = pmt1 * Math.pow(1 + incRateAA, y - 1);
+                let infFactorYear = Math.pow(1 + inflationAA, y);
+                let pmtRealYear = pmtNomYear / infFactorYear;
+
+                for (let m = 1; m <= 12; m++) {
+                    currNom = currNom * (1 + netNominalAM) + pmtNomYear;
+                    totalInvestedNom += pmtNomYear;
+                }
+
+                let currReal = currNom / infFactorYear;
+                let jurosAcum = currNom - totalInvestedNom;
+
+                tableRowsHtml += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${y}º ano</td>
+                        <td class="py-2.5 px-3 font-medium text-slate-800">${formatCurrency(pmtNomYear)}</td>
+                        <td class="py-2.5 px-3 text-slate-600">${formatCurrency(pmtRealYear)}</td>
+                        <td class="py-2.5 px-3 text-slate-600">${formatCurrency(totalInvestedNom)}</td>
+                        <td class="py-2.5 px-3 text-emerald-600 font-medium">${formatCurrency(jurosAcum)}</td>
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${formatCurrency(currNom)}</td>
+                        <td class="py-2.5 px-3 bg-blue-50/70 font-bold text-blue-900">${formatCurrency(currReal)}</td>
+                    </tr>
+                `;
+
+                labels.push(`Ano ${y}`);
+                chartNominalData.push(currNom);
+                chartRealData.push(currReal);
+                chartInvestedData.push(totalInvestedNom);
+            }
+
+            if (remMonths > 0) {
+                let yPartialIndex = fullYears;
+                let pmtNomYear = pmt1 * Math.pow(1 + incRateAA, yPartialIndex);
+
+                for (let m = 1; m <= remMonths; m++) {
+                    currNom = currNom * (1 + netNominalAM) + pmtNomYear;
+                    totalInvestedNom += pmtNomYear;
+                }
+
+                let infFactorYear = Math.pow(1 + inflationAA, years);
+                let pmtRealYear = pmtNomYear / infFactorYear;
+                let currReal = currNom / infFactorYear;
+                let jurosAcum = currNom - totalInvestedNom;
+
+                let yearLabelStr = years.toFixed(2).replace(/\.?0+$/, '').replace('.', ',');
+
+                tableRowsHtml += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${yearLabelStr}º ano (${remMonths} m)</td>
+                        <td class="py-2.5 px-3 font-medium text-slate-800">${formatCurrency(pmtNomYear)}</td>
+                        <td class="py-2.5 px-3 text-slate-600">${formatCurrency(pmtRealYear)}</td>
+                        <td class="py-2.5 px-3 text-slate-600">${formatCurrency(totalInvestedNom)}</td>
+                        <td class="py-2.5 px-3 text-emerald-600 font-medium">${formatCurrency(jurosAcum)}</td>
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${formatCurrency(currNom)}</td>
+                        <td class="py-2.5 px-3 bg-blue-50/70 font-bold text-blue-900">${formatCurrency(currReal)}</td>
+                    </tr>
+                `;
+
+                labels.push(`Ano ${yearLabelStr}`);
+                chartNominalData.push(currNom);
+                chartRealData.push(currReal);
+                chartInvestedData.push(totalInvestedNom);
+            }
+
+            const finalNominal = currNom;
+            const finalReal = currNom / Math.pow(1 + inflationAA, years);
+
+            currentCalculations = {
+                desiredIncomeReal, initialCap, years, nomRateAA, inflationAA, taxRate, incRateAA,
+                netNominalAA, netNominalAM, realRateAA, realRateAM, targetReal, targetNominal, pmt1,
+                finalNominal, finalReal
+            };
+
+            document.getElementById('cardPmt1').innerText = formatCurrency(pmt1);
+            document.getElementById('cardPmtDesc').innerText = `Reajustado em ${formatPercent(incRateAA)} ao ano para acompanhar a inflação.`;
+            document.getElementById('cardTargetNominal').innerText = formatCurrency(finalNominal);
+            document.getElementById('cardTargetReal').innerText = formatCurrency(finalReal);
+
+            document.getElementById('rateNomBrutaAA').innerText = formatPercent(nomRateAA);
+            document.getElementById('rateNomBrutaAM').innerText = formatPercent(nomRateAM);
+            document.getElementById('rateNomLiqAA').innerText = formatPercent(netNominalAA);
+            document.getElementById('rateNomLiqAM').innerText = formatPercent(netNominalAM);
+            document.getElementById('rateRealAA').innerText = formatPercent(realRateAA);
+            document.getElementById('rateRealAM').innerText = formatPercent(realRateAM);
+
+            document.getElementById('syncValuesText').innerText = `${formatCurrency(finalReal)} (Real) / ${formatCurrency(finalNominal)} (Nominal)`;
+
+            document.getElementById('accumulationTableBody').innerHTML = tableRowsHtml;
+
+            renderAccumulationChart(labels, chartNominalData, chartRealData, chartInvestedData);
+            saveToLocalStorage();
+
+            if (document.getElementById('targetWealthBadge')) {
+                document.getElementById('targetWealthBadge').innerText = `Patrimônio Meta (Aba 1): ${formatCurrency(finalNominal)}`;
+            }
+        }
+
+        function renderAccumulationChart(labels, nomData, realData, investedData) {
+            const ctx = document.getElementById('accumulationChart').getContext('2d');
+            if (accumChartInstance) accumChartInstance.destroy();
+
+            accumChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Saldo Nominal (No Banco)',
+                            data: nomData,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Saldo Real (Poder de Compra Hoje)',
+                            data: realData,
+                            borderColor: '#059669',
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Total Aportado (Do Seu Bolso)',
+                            data: investedData,
+                            borderColor: '#64748b',
+                            backgroundColor: 'transparent',
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + (value / 1000).toFixed(0) + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function getTab2RealRateAM() {
+            const tab2NomRateAA = (parseFloat(document.getElementById('tab2NomRate').value) || 0) / 100;
+            const inflationAA = (parseFloat(document.getElementById('tab2InflationRate').value) || 0) / 100;
+            const taxRate = (parseFloat(document.getElementById('tab2TaxRate').value) || 0) / 100;
+
+            const netNominalAA = tab2NomRateAA * (1 - taxRate);
+            const realRateAA = ((1 + netNominalAA) / (1 + inflationAA)) - 1;
+            return Math.pow(1 + realRateAA, 1/12) - 1;
+        }
+
+        function setPresetWithdrawal(type) {
+            const initialCap = parseFloat(document.getElementById('tab2Cap').value) || 0;
+            const realRateAM = getTab2RealRateAM();
+            const perpetualIncome = initialCap * realRateAM;
+
+            const expEl = document.getElementById('presetExplanation');
+            let explanationText = '';
+
+            if (type === 'perpetual') {
+                document.getElementById('tab2Withdrawal').value = Math.round(perpetualIncome);
+                explanationText = '<strong>100% Renda Perpétua:</strong> Você saca exatamente 100% do rendimento real gerado no mês. O poder de compra do seu capital acumulado é preservado intacto por tempo indeterminado.';
+                if (expEl) expEl.className = "p-3 bg-slate-100 border border-slate-300 rounded-lg text-xs text-slate-800 transition-all mt-2";
+            } else if (type === 'rule4p') {
+                const monthly4Percent = (initialCap * 0.04) / 12;
+                document.getElementById('tab2Withdrawal').value = Math.round(monthly4Percent);
+                explanationText = '<strong>Regra dos 4% (Estudo Trinity):</strong> Define a retirada mensal equivalente a 4% do patrimônio ao ano (divididos por 12). É um padrão global clássico para aposentadorias de longo prazo.';
+                if (expEl) expEl.className = "p-3 bg-purple-50 border border-purple-200 rounded-lg text-xs text-purple-900 transition-all mt-2";
+            } else if (type === 'growth') {
+                document.getElementById('tab2Withdrawal').value = Math.round(perpetualIncome * 0.8);
+                explanationText = '<strong>Crescimento Patrimonial (+20% Reaplicação):</strong> Você saca 80% dos juros reais gerados e reinveste os 20% restantes. Isso faz seu patrimônio e sua renda futura crescerem acima da inflação.';
+                if (expEl) expEl.className = "p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-900 transition-all mt-2";
+            } else if (type === 'depletion') {
+                document.getElementById('tab2Withdrawal').value = Math.round(perpetualIncome * 1.25);
+                explanationText = '<strong>Consumo Gradual do Principal (+25% Retirada):</strong> Sua retirada excede o rendimento real gerado em 25%. O patrimônio acumulado será consumido aos poucos ao longo dos anos.';
+                if (expEl) expEl.className = "p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-900 transition-all mt-2";
+            }
+
+            if (expEl) {
+                expEl.innerHTML = explanationText;
+                expEl.classList.remove('hidden');
+            }
+
+            calculateRetirement();
+        }
+
+        function setChartFilter(filter) {
+            activeChartFilter = filter;
+            updateChartFilterButtons();
+            applyChartFilterAndRender();
+        }
+
+        function updateChartFilterButtons() {
+            const options = ['5', '10', '15', 'max'];
+            options.forEach(opt => {
+                const btnKey = opt === 'max' ? 'Max' : opt;
+                const btn = document.getElementById('btnFilter' + btnKey);
+                if (!btn) return;
+
+                if (String(activeChartFilter) === opt) {
+                    btn.className = "px-3 py-1.5 rounded-lg transition bg-white text-blue-600 shadow-sm font-bold";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg transition hover:bg-white text-slate-600";
+                }
+            });
+        }
+
+        function applyChartFilterAndRender() {
+            if (!currentRetData.labels || currentRetData.labels.length === 0) return;
+
+            let limit = currentRetData.labels.length;
+            if (activeChartFilter !== 'max') {
+                const requestedYears = parseInt(activeChartFilter);
+                limit = Math.min(requestedYears + 1, currentRetData.labels.length);
+            }
+
+            const slicedLabels = currentRetData.labels.slice(0, limit);
+            const slicedSelectedReal = currentRetData.selectedReal.slice(0, limit);
+            const slicedPerpetualReal = currentRetData.perpetualReal.slice(0, limit);
+            const slicedNominalBank = currentRetData.nominalBank.slice(0, limit);
+
+            renderRetirementChart(slicedLabels, slicedSelectedReal, slicedPerpetualReal, slicedNominalBank);
+        }
+
+        function calculateRetirement() {
+            const initialCapReal = parseFloat(document.getElementById('tab2Cap').value) || 0;
+            const monthlyWithdrawalReal = parseFloat(document.getElementById('tab2Withdrawal').value) || 0;
+            const horizonYears = parseInt(document.getElementById('tab2Horizon').value) || 30;
+
+            const realRateAM = getTab2RealRateAM();
+            const inflationAA = (parseFloat(document.getElementById('tab2InflationRate').value) || 0) / 100;
+            const accumYears = currentCalculations.years || 0;
+
+            const monthlyRealInterest = initialCapReal * realRateAM;
+            const monthlyNetFlow = monthlyRealInterest - monthlyWithdrawalReal;
+
+            document.getElementById('cardMonthlyRealInterest').innerText = formatCurrency(monthlyRealInterest);
+            document.getElementById('cardMonthlyWithdrawal').innerText = formatCurrency(monthlyWithdrawalReal);
+            
+            // Cálculo e Exibição do Valor em R$ + Porcentagem no Card de Sobra/Reaplicação Mensal
+            let netFlowPctText = '';
+            if (monthlyRealInterest > 0) {
+                const pct = (monthlyNetFlow / monthlyRealInterest) * 100;
+                const sign = pct > 0 ? '+' : '';
+                netFlowPctText = `<span class="text-xs font-normal text-slate-500 block sm:inline sm:ml-1 font-normal">(${sign}${pct.toFixed(2).replace('.', ',')}% dos juros)</span>`;
+            } else if (initialCapReal > 0) {
+                const pct = (monthlyNetFlow / initialCapReal) * 100;
+                const sign = pct > 0 ? '+' : '';
+                netFlowPctText = `<span class="text-xs font-normal text-slate-500 block sm:inline sm:ml-1 font-normal">(${sign}${pct.toFixed(2).replace('.', ',')}% a.m.)</span>`;
+            }
+            document.getElementById('cardMonthlyNetFlow').innerHTML = `${formatCurrency(monthlyNetFlow)} ${netFlowPctText}`;
+
+            const statusContainer = document.getElementById('statusCardContainer');
+            const statusTag = document.getElementById('statusCardTag');
+            const statusBadge = document.getElementById('statusBadge');
+            const statusTitle = document.getElementById('statusCardTitle');
+            const statusDesc = document.getElementById('statusCardDesc');
+            const netFlowLabel = document.getElementById('cardMonthlyNetFlowLabel');
+
+            if (Math.abs(monthlyNetFlow) < 1) {
+                statusContainer.className = "bg-emerald-600 text-white p-6 rounded-2xl shadow-sm transition-all duration-300";
+                statusTag.innerText = "Estratégia Sustentável";
+                statusBadge.innerText = "Renda Perpétua";
+                statusTitle.innerText = "Patrimônio Preservado Indefinidamente";
+                statusDesc.innerText = "Sua retirada é exatamente igual aos juros reais. O capital principal permanece 100% intacto ao longo de décadas.";
+                netFlowLabel.innerText = "Equilíbrio neutro do capital";
+                document.getElementById('cardMonthlyNetFlow').className = "text-xl font-bold mt-1 text-slate-700";
+            } else if (monthlyNetFlow > 0) {
+                statusContainer.className = "bg-blue-600 text-white p-6 rounded-2xl shadow-sm transition-all duration-300";
+                statusTag.innerText = "Estratégia de Acumulação Contínua";
+                statusBadge.innerText = "Crescimento do Capital";
+                statusTitle.innerText = "Seu Patrimônio Continua Crescendo";
+                statusDesc.innerText = `Você saca menos que os juros gerados. A sobra de ${formatCurrency(monthlyNetFlow)}/mês é reaplicada, expandindo seu poder de compra.`;
+                netFlowLabel.innerText = "Reaplicado mensalmente";
+                document.getElementById('cardMonthlyNetFlow').className = "text-xl font-bold mt-1 text-emerald-600";
+            } else {
+                statusContainer.className = "bg-rose-600 text-white p-6 rounded-2xl shadow-sm transition-all duration-300";
+                statusTag.innerText = "Estratégia de Consumo do Principal";
+                statusBadge.innerText = "Desvalorização / Exaustão";
+                statusTitle.innerText = "Consumo Gradual do Patrimônio";
+                statusDesc.innerText = `A retirada excede os juros em ${formatCurrency(Math.abs(monthlyNetFlow))}/mês. O principal será gradualmente reduzido ao longo do tempo.`;
+                netFlowLabel.innerText = "Retirado do capital principal";
+                document.getElementById('cardMonthlyNetFlow').className = "text-xl font-bold mt-1 text-rose-600";
+            }
+
+            let currentCapReal = initialCapReal;
+            let tableHtml = '';
+            
+            let labels = ['Ano 0'];
+            let chartSelectedReal = [initialCapReal];
+            let chartPerpetualReal = [initialCapReal];
+            let chartNominalBank = [initialCapReal * Math.pow(1 + inflationAA, accumYears)];
+
+            for (let y = 1; y <= horizonYears; y++) {
+                let startCapReal = currentCapReal;
+                let annualRealYield = 0;
+                let annualWithdrawalReal = monthlyWithdrawalReal * 12;
+
+                for (let m = 1; m <= 12; m++) {
+                    let mYield = currentCapReal * realRateAM;
+                    annualRealYield += mYield;
+                    currentCapReal = currentCapReal + mYield - monthlyWithdrawalReal;
+                    if (currentCapReal < 0) currentCapReal = 0;
+                }
+
+                let annualNetChange = annualRealYield - annualWithdrawalReal;
+                let totalInflationYears = accumYears + y;
+                let monthlyWithdrawalNominal = monthlyWithdrawalReal * Math.pow(1 + inflationAA, totalInflationYears);
+                let nominalBankValue = currentCapReal * Math.pow(1 + inflationAA, totalInflationYears);
+
+                tableHtml += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${y}º ano</td>
+                        <td class="py-2.5 px-3 text-slate-700">${formatCurrency(startCapReal)}</td>
+                        <td class="py-2.5 px-3 text-emerald-600 font-medium">${formatCurrency(annualRealYield)}</td>
+                        <td class="py-2.5 px-3 bg-blue-50/70">
+                            <div class="font-bold text-blue-900">${formatCurrency(monthlyWithdrawalReal)} <span class="text-[10px] text-blue-600 font-semibold">(Real)</span></div>
+                            <div class="text-[11px] text-slate-500 font-medium">${formatCurrency(monthlyWithdrawalNominal)} <span class="text-[10px] text-slate-400 font-normal">(Nominal)</span></div>
+                        </td>
+                        <td class="py-2.5 px-3 text-blue-700 font-medium">${formatCurrency(annualWithdrawalReal)}</td>
+                        <td class="py-2.5 px-3 ${annualNetChange >= 0 ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold'}">
+                            ${annualNetChange >= 0 ? '+' : ''}${formatCurrency(annualNetChange)}
+                        </td>
+                        <td class="py-2.5 px-3 bg-emerald-50/70 font-bold text-emerald-900">${formatCurrency(currentCapReal)}</td>
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${formatCurrency(nominalBankValue)}</td>
+                    </tr>
+                `;
+
+                labels.push(`Ano ${y}`);
+                chartSelectedReal.push(currentCapReal);
+                chartPerpetualReal.push(initialCapReal);
+                chartNominalBank.push(nominalBankValue);
+            }
+
+            document.getElementById('retirementTableBody').innerHTML = tableHtml;
+
+            currentRetData = {
+                labels: labels,
+                selectedReal: chartSelectedReal,
+                perpetualReal: chartPerpetualReal,
+                nominalBank: chartNominalBank
+            };
+
+            updateChartFilterButtons();
+            applyChartFilterAndRender();
+            saveToLocalStorage();
+        }
+
+        function renderRetirementChart(labels, selectedReal, perpetualReal, nominalBank) {
+            const ctx = document.getElementById('retirementChart').getContext('2d');
+            if (retChartInstance) retChartInstance.destroy();
+
+            retChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Cenário Selecionado (Poder de Compra Real)',
+                            data: selectedReal,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Renda Perpétua Mantida (Linha de Base Real)',
+                            data: perpetualReal,
+                            borderColor: '#059669',
+                            borderDash: [4, 4],
+                            backgroundColor: 'transparent',
+                            tension: 0
+                        },
+                        {
+                            label: 'Saldo Nominal no Banco (Com Inflação Acumulada)',
+                            data: nominalBank,
+                            borderColor: '#94a3b8',
+                            backgroundColor: 'transparent',
+                            borderDash: [2, 2],
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(val) {
+                                    return 'R$ ' + (val / 1000).toFixed(0) + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ================= TAB 3 LOGIC & IMPORT FEATURE =================
+
+        function toggleMetaPanel() {
+            const p = document.getElementById('metaPanel');
+            p.classList.toggle('hidden');
+        }
+
+        function triggerImport(type) {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.csv, .json, .txt';
+            fileInput.onchange = (e) => handleFileImport(e, type);
+            fileInput.click();
+        }
+
+        function parseCleanFloat(val) {
+            if (typeof val === 'number') return val;
+            if (!val) return 0;
+            let str = String(val).trim().replace('R$', '').replace('%', '').trim();
+            if (str.includes(',') && str.includes('.')) {
+                str = str.replace(/\./g, '').replace(',', '.');
+            } else if (str.includes(',')) {
+                str = str.replace(',', '.');
+            }
+            return parseFloat(str) || 0;
+        }
+
+        function handleFileImport(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                let items = [];
+
+                if (file.name.endsWith('.json')) {
+                    try {
+                        items = JSON.parse(content);
+                    } catch (err) {
+                        alert('Erro ao ler arquivo JSON. Certifique-se de que é uma estrutura de lista de objetos válida.');
+                        return;
+                    }
+                } else {
+                    const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
+                    if (lines.length === 0) return;
+
+                    let delimiter = ',';
+                    if (lines[0].includes(';')) {
+                        delimiter = ';';
+                    } else if (lines[0].includes('\t')) {
+                        delimiter = '\t';
+                    } else if (!lines[0].includes(',') && lines[0].trim().includes(' ')) {
+                        delimiter = /\s+/;
+                    }
+
+                    const firstLineLower = lines[0].toLowerCase();
+                    const hasHeader = firstLineLower.includes('nome') || firstLineLower.includes('ticker') || firstLineLower.includes('ativo') || firstLineLower.includes('qtd') || firstLineLower.includes('quantidade');
+
+                    let headers = [];
+                    let startIdx = 0;
+
+                    if (hasHeader) {
+                        if (delimiter instanceof RegExp) {
+                            headers = (lines[0].match(/(?:[^\s"]+|"[^"]*")+/g) || []).map(h => h.replace(/^"|"$/g, '').trim().toLowerCase());
+                        } else {
+                            headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase().replace(/"/g, ''));
+                        }
+                        startIdx = 1;
+                    }
+
+                    for (let i = startIdx; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+
+                        let cols = [];
+                        if (delimiter instanceof RegExp) {
+                            cols = line.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
+                            cols = cols.map(c => c.replace(/^"|"$/g, '').trim());
+                        } else {
+                            cols = line.split(delimiter).map(c => c.trim().replace(/"/g, ''));
+                        }
+
+                        if (cols.length < 2) continue;
+
+                        let rowObj = {};
+                        if (hasHeader) {
+                            headers.forEach((h, idx) => {
+                                rowObj[h] = cols[idx] || '';
+                            });
+                        } else {
+                            rowObj.name = cols[0];
+                            rowObj.qty = cols[1];
+                            rowObj.price = cols[2];
+                            rowObj.yield = cols[3];
+                        }
+                        items.push(rowObj);
+                    }
+                }
+
+                let addedCount = 0;
+                let updatedCount = 0;
+
+                items.forEach(raw => {
+                    const rawName = raw.name || raw.nome || raw.ticker || raw.ativo || raw.symbol || raw['ativo/ticker'] || raw['descrição'] || 'Ativo Importado';
+                    const name = String(rawName).trim();
+                    const qty = parseCleanFloat(raw.qty || raw.qtd || raw.quantidade || raw['qtd. atual'] || raw.quantity);
+                    const price = parseCleanFloat(raw.price || raw.preco || raw.preço || raw.cotacao || raw.cotação || raw.valor || raw.val);
+
+                    const existingIndex = portfolioState[type].findIndex(
+                        item => item.name.trim().toUpperCase() === name.toUpperCase()
+                    );
+
+                    if (type === 'acoes') {
+                        const dpa = parseCleanFloat(raw.dpa || raw.rendimento || raw.yield || raw['dpa anual (r$)'] || raw.dividend);
+                        if (existingIndex !== -1) {
+                            portfolioState.acoes[existingIndex].qty = qty;
+                            portfolioState.acoes[existingIndex].price = price;
+                            portfolioState.acoes[existingIndex].dpa = dpa;
+                            updatedCount++;
+                        } else {
+                            portfolioState.acoes.push({ name, qty, price, dpa, targetQty: 0 });
+                            addedCount++;
+                        }
+                    } else if (type === 'fiis') {
+                        const monthlyIncome = parseCleanFloat(raw.monthlyincome || raw.monthlyIncome || raw.rendimento || raw.yield || raw['rend. mensal/cota (r$)'] || raw.dpa);
+                        if (existingIndex !== -1) {
+                            portfolioState.fiis[existingIndex].qty = qty;
+                            portfolioState.fiis[existingIndex].price = price;
+                            portfolioState.fiis[existingIndex].monthlyIncome = monthlyIncome;
+                            updatedCount++;
+                        } else {
+                            portfolioState.fiis.push({ name, qty, price, monthlyIncome, targetQty: 0 });
+                            addedCount++;
+                        }
+                    } else if (type === 'etfs') {
+                        const yieldRate = parseCleanFloat(raw.yieldrate || raw.yieldRate || raw.rendimento || raw.yield || raw.taxa || raw['rendimento bruto (% a.a.)']);
+                        if (existingIndex !== -1) {
+                            portfolioState.etfs[existingIndex].qty = qty;
+                            portfolioState.etfs[existingIndex].price = price;
+                            portfolioState.etfs[existingIndex].yieldRate = yieldRate;
+                            updatedCount++;
+                        } else {
+                            portfolioState.etfs.push({ name, qty, price, yieldRate, targetQty: 0 });
+                            addedCount++;
+                        }
+                    } else if (type === 'rendaFixa') {
+                        const yieldRate = parseCleanFloat(raw.yieldrate || raw.yieldRate || raw.rendimento || raw.yield || raw.taxa || raw['rendimento bruto (% a.a.)']);
+                        if (existingIndex !== -1) {
+                            portfolioState.rendaFixa[existingIndex].qty = qty;
+                            portfolioState.rendaFixa[existingIndex].price = price;
+                            portfolioState.rendaFixa[existingIndex].yieldRate = yieldRate;
+                            updatedCount++;
+                        } else {
+                            portfolioState.rendaFixa.push({ name, qty, price, yieldRate, targetQty: 0 });
+                            addedCount++;
+                        }
+                    }
+                });
+
+                if (addedCount > 0 || updatedCount > 0) {
+                    renderPortfolio();
+                    calculateMetaQuantities();
+                    let msg = [];
+                    if (addedCount > 0) msg.push(`${addedCount} novo(s) ativo(s) adicionado(s)`);
+                    if (updatedCount > 0) msg.push(`${updatedCount} ativo(s) atualizado(s)`);
+                    alert(`Importação concluída: ${msg.join(' e ')}!`);
+                } else {
+                    alert('Nenhum ativo pôde ser extraído do arquivo. Verifique se o formato contém colunas com Nome, Quantidade e Preço.');
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        function addAssetRow(type) {
+            if (type === 'acoes') {
+                portfolioState.acoes.push({ name: 'NOVA AÇÃO', qty: 0, price: 0, dpa: 0, targetQty: 0 });
+            } else if (type === 'fiis') {
+                portfolioState.fiis.push({ name: 'NOVO FII', qty: 0, price: 0, monthlyIncome: 0, targetQty: 0 });
+            } else if (type === 'etfs') {
+                portfolioState.etfs.push({ name: 'NOVO ETF', qty: 0, price: 0, yieldRate: 0, targetQty: 0 });
+            } else if (type === 'rendaFixa') {
+                portfolioState.rendaFixa.push({ name: 'NOVO TÍTULO', qty: 1, price: 0, yieldRate: 0, targetQty: 0 });
+            }
+            renderPortfolio();
+            calculateMetaQuantities();
+        }
+
+        function removeAssetRow(type, index) {
+            portfolioState[type].splice(index, 1);
+            renderPortfolio();
+            calculateMetaQuantities();
+        }
+
+        function updateAssetField(type, index, field, value) {
+            portfolioState[type][index][field] = field === 'name' ? value : (parseFloat(value) || 0);
+            calculateMetaQuantities();
+        }
+
+        function calculateMetaQuantities() {
+            const targetWealth = currentCalculations.finalNominal || 1000000;
+            
+            const metaAcoes = parseFloat(document.getElementById('meta_acoes').value) || 0;
+            const metaFiis = parseFloat(document.getElementById('meta_fiis').value) || 0;
+            const metaEtfs = parseFloat(document.getElementById('meta_etfs').value) || 0;
+            const metaRendaFixa = parseFloat(document.getElementById('meta_rendaFixa').value) || 0;
+
+            portfolioState.meta = {
+                acoes: metaAcoes,
+                fiis: metaFiis,
+                etfs: metaEtfs,
+                rendaFixa: metaRendaFixa
+            };
+
+            const totalMetaPct = metaAcoes + metaFiis + metaEtfs + metaRendaFixa;
+            const metaTotalEl = document.getElementById('metaTotalPct');
+            if (metaTotalEl) {
+                metaTotalEl.innerText = totalMetaPct.toFixed(0) + '%';
+                metaTotalEl.className = totalMetaPct === 100 ? "text-emerald-400 font-bold" : "text-rose-400 font-bold";
+            }
+
+            const segments = [
+                { key: 'acoes', pct: metaAcoes },
+                { key: 'fiis', pct: metaFiis },
+                { key: 'etfs', pct: metaEtfs },
+                { key: 'rendaFixa', pct: metaRendaFixa }
+            ];
+
+            segments.forEach(seg => {
+                const segTargetValue = targetWealth * (seg.pct / 100);
+                const items = portfolioState[seg.key];
+                const numItems = items ? items.length : 0;
+                
+                if (numItems > 0 && segTargetValue > 0) {
+                    const targetMoneyPerAsset = segTargetValue / numItems;
+                    items.forEach(item => {
+                        const price = parseFloat(item.price) || 0;
+                        if (price > 0) {
+                            item.targetQty = Math.ceil(targetMoneyPerAsset / price);
+                        } else {
+                            item.targetQty = 0;
+                        }
+                    });
+                } else if (items) {
+                    items.forEach(item => item.targetQty = 0);
+                }
+            });
+
+            recalculatePortfolioValues();
+        }
+
+        function recalculatePortfolioValues() {
+            const targetWealth = currentCalculations.finalNominal || 1000000;
+
+            let totalPortfolioValue = 0;
+            let totalAnnualIncome = 0;
+
+            const segmentTotals = {
+                acoes: { value: 0, annualIncome: 0, label: 'Ações', metaPct: portfolioState.meta?.acoes || 30 },
+                fiis: { value: 0, annualIncome: 0, label: 'Fundos Imobiliários (FIIs)', metaPct: portfolioState.meta?.fiis || 30 },
+                etfs: { value: 0, annualIncome: 0, label: 'ETFs', metaPct: portfolioState.meta?.etfs || 20 },
+                rendaFixa: { value: 0, annualIncome: 0, label: 'Renda Fixa', metaPct: portfolioState.meta?.rendaFixa || 20 }
+            };
+
+            // 1. Atualizar Ações
+            (portfolioState.acoes || []).forEach((item, i) => {
+                const total = item.qty * item.price;
+                const dy = item.price > 0 ? (item.dpa / item.price) * 100 : 0;
+                const annualIncome = total * (dy / 100);
+
+                segmentTotals.acoes.value += total;
+                segmentTotals.acoes.annualIncome += annualIncome;
+
+                const tQtyEl = document.getElementById(`acoes_targetQty_${i}`);
+                if (tQtyEl) tQtyEl.innerHTML = formatMetaProgress(item.qty, item.targetQty);
+
+                const dyEl = document.getElementById(`acoes_dy_${i}`);
+                if (dyEl) dyEl.innerText = dy.toFixed(2).replace('.', ',') + '%';
+
+                const totEl = document.getElementById(`acoes_total_${i}`);
+                if (totEl) totEl.innerText = formatCurrency(total);
+            });
+
+            // 2. Atualizar FIIs
+            (portfolioState.fiis || []).forEach((item, i) => {
+                const total = item.qty * item.price;
+                const dyAnual = item.price > 0 ? ((item.monthlyIncome * 12) / item.price) * 100 : 0;
+                const annualIncome = total * (dyAnual / 100);
+
+                segmentTotals.fiis.value += total;
+                segmentTotals.fiis.annualIncome += annualIncome;
+
+                const tQtyEl = document.getElementById(`fiis_targetQty_${i}`);
+                if (tQtyEl) tQtyEl.innerHTML = formatMetaProgress(item.qty, item.targetQty);
+
+                const dyEl = document.getElementById(`fiis_dy_${i}`);
+                if (dyEl) dyEl.innerText = dyAnual.toFixed(2).replace('.', ',') + '%';
+
+                const totEl = document.getElementById(`fiis_total_${i}`);
+                if (totEl) totEl.innerText = formatCurrency(total);
+            });
+
+            // 3. Atualizar ETFs
+            (portfolioState.etfs || []).forEach((item, i) => {
+                const total = item.qty * item.price;
+                const annualIncome = total * (item.yieldRate / 100);
+
+                segmentTotals.etfs.value += total;
+                segmentTotals.etfs.annualIncome += annualIncome;
+
+                const tQtyEl = document.getElementById(`etfs_targetQty_${i}`);
+                if (tQtyEl) tQtyEl.innerHTML = formatMetaProgress(item.qty, item.targetQty);
+
+                const totEl = document.getElementById(`etfs_total_${i}`);
+                if (totEl) totEl.innerText = formatCurrency(total);
+            });
+
+            // 4. Atualizar Renda Fixa
+            (portfolioState.rendaFixa || []).forEach((item, i) => {
+                const total = item.qty * item.price;
+                const annualIncome = total * (item.yieldRate / 100);
+
+                segmentTotals.rendaFixa.value += total;
+                segmentTotals.rendaFixa.annualIncome += annualIncome;
+
+                const tQtyEl = document.getElementById(`rendaFixa_targetQty_${i}`);
+                if (tQtyEl) tQtyEl.innerHTML = formatMetaProgress(item.qty, item.targetQty);
+
+                const totEl = document.getElementById(`rendaFixa_total_${i}`);
+                if (totEl) totEl.innerText = formatCurrency(total);
+            });
+
+            // Consolidar Totais
+            Object.values(segmentTotals).forEach(s => {
+                totalPortfolioValue += s.value;
+                totalAnnualIncome += s.annualIncome;
+            });
+
+            const portfolioYieldAA = totalPortfolioValue > 0 ? (totalAnnualIncome / totalPortfolioValue) * 100 : 0;
+            const monthlyIncome = totalAnnualIncome / 12;
+
+            const elTotVal = document.getElementById('portfolioTotalValue');
+            if (elTotVal) elTotVal.innerText = formatCurrency(totalPortfolioValue);
+
+            const elYield = document.getElementById('portfolioWeightedYield');
+            if (elYield) elYield.innerText = portfolioYieldAA.toFixed(2).replace('.', ',') + '% a.a.';
+
+            const elMonthInc = document.getElementById('portfolioMonthlyIncome');
+            if (elMonthInc) elMonthInc.innerText = formatCurrency(monthlyIncome);
+
+            const elAnnInc = document.getElementById('portfolioAnnualIncome');
+            if (elAnnInc) elAnnInc.innerText = formatCurrency(totalAnnualIncome);
+
+            // Renderizar Tabela de Resumo dos Segmentos
+            let segmentSummaryHtml = '';
+            Object.values(segmentTotals).forEach(s => {
+                const share = totalPortfolioValue > 0 ? (s.value / totalPortfolioValue) * 100 : 0;
+                const segYield = s.value > 0 ? (s.annualIncome / s.value) * 100 : 0;
+                const metaVal = targetWealth * (s.metaPct / 100);
+                const segMonthlyIncome = s.annualIncome / 12;
+
+                segmentSummaryHtml += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-2.5 px-3 font-semibold text-slate-900">${s.label}</td>
+                        <td class="py-2.5 px-3">${formatCurrency(s.value)}</td>
+                        <td class="py-2.5 px-3 font-medium text-slate-700">${share.toFixed(2).replace('.', ',')}%</td>
+                        <td class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/30">${s.metaPct}%</td>
+                        <td class="py-2.5 px-3 font-bold text-indigo-700 bg-indigo-50/30">${formatCurrency(metaVal)}</td>
+                        <td class="py-2.5 px-3 font-bold text-blue-600">${segYield.toFixed(2).replace('.', ',')}% a.a.</td>
+                        <td class="py-2.5 px-3 text-emerald-600 font-semibold">
+                            <div>${formatCurrency(s.annualIncome)} <span class="text-[10px] text-slate-500 font-normal">/ ano</span></div>
+                            <div class="text-[11px] text-emerald-700 font-medium">${formatCurrency(segMonthlyIncome)} <span class="text-[10px] text-slate-400 font-normal">/ mês</span></div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const segTableBody = document.getElementById('segmentSummaryTableBody');
+            if (segTableBody) segTableBody.innerHTML = segmentSummaryHtml;
+
+            portfolioState.calculatedTotal = totalPortfolioValue;
+            portfolioState.calculatedYield = portfolioYieldAA;
+
+            saveToLocalStorage();
+        }
+
+        function renderPortfolio() {
+            if (document.getElementById('meta_acoes') && portfolioState.meta) {
+                document.getElementById('meta_acoes').value = portfolioState.meta.acoes;
+                document.getElementById('meta_fiis').value = portfolioState.meta.fiis;
+                document.getElementById('meta_etfs').value = portfolioState.meta.etfs;
+                document.getElementById('meta_rendaFixa').value = portfolioState.meta.rendaFixa;
+            }
+
+            // Render Ações
+            let acoesHtml = '';
+            portfolioState.acoes.forEach((item, i) => {
+                acoesHtml += `
+                    <tr>
+                        <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('acoes', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('acoes', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
+                        <td id="acoes_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50">0</td>
+                        <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('acoes', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.dpa}" step="0.01" oninput="updateAssetField('acoes', ${i}, 'dpa', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td id="acoes_dy_${i}" class="py-2 px-3 font-bold text-blue-600">0,00%</td>
+                        <td id="acoes_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
+                        <td class="py-2 px-3"><button type="button" onclick="removeAssetRow('acoes', ${i})" class="text-rose-500 font-bold hover:text-rose-700">✕</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('acoesTableBody').innerHTML = acoesHtml;
+
+            // Render FIIs
+            let fiisHtml = '';
+            portfolioState.fiis.forEach((item, i) => {
+                fiisHtml += `
+                    <tr>
+                        <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('fiis', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('fiis', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
+                        <td id="fiis_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50">0</td>
+                        <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('fiis', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.monthlyIncome}" step="0.01" oninput="updateAssetField('fiis', ${i}, 'monthlyIncome', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td id="fiis_dy_${i}" class="py-2 px-3 font-bold text-emerald-600">0,00%</td>
+                        <td id="fiis_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
+                        <td class="py-2 px-3"><button type="button" onclick="removeAssetRow('fiis', ${i})" class="text-rose-500 font-bold hover:text-rose-700">✕</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('fiisTableBody').innerHTML = fiisHtml;
+
+            // Render ETFs
+            let etfsHtml = '';
+            portfolioState.etfs.forEach((item, i) => {
+                etfsHtml += `
+                    <tr>
+                        <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('etfs', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('etfs', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
+                        <td id="etfs_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50">0</td>
+                        <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('etfs', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.yieldRate}" step="0.1" oninput="updateAssetField('etfs', ${i}, 'yieldRate', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td id="etfs_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
+                        <td class="py-2 px-3"><button type="button" onclick="removeAssetRow('etfs', ${i})" class="text-rose-500 font-bold hover:text-rose-700">✕</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('etfsTableBody').innerHTML = etfsHtml;
+
+            // Render Renda Fixa
+            let rendaFixaHtml = '';
+            portfolioState.rendaFixa.forEach((item, i) => {
+                rendaFixaHtml += `
+                    <tr>
+                        <td class="py-2 px-3"><input type="text" value="${item.name}" oninput="updateAssetField('rendaFixa', ${i}, 'name', this.value)" class="w-full border rounded px-2 py-1 font-semibold"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.qty}" oninput="updateAssetField('rendaFixa', ${i}, 'qty', this.value)" class="w-20 border rounded px-2 py-1"></td>
+                        <td id="rendaFixa_targetQty_${i}" class="py-2 px-3 bg-indigo-50/50">0</td>
+                        <td class="py-2 px-3"><input type="number" value="${item.price}" step="0.1" oninput="updateAssetField('rendaFixa', ${i}, 'price', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td class="py-2 px-3"><input type="number" value="${item.yieldRate}" step="0.1" oninput="updateAssetField('rendaFixa', ${i}, 'yieldRate', this.value)" class="w-24 border rounded px-2 py-1"></td>
+                        <td id="rendaFixa_total_${i}" class="py-2 px-3 font-semibold">R$ 0,00</td>
+                        <td class="py-2 px-3"><button type="button" onclick="removeAssetRow('rendaFixa', ${i})" class="text-rose-500 font-bold hover:text-rose-700">✕</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('rendaFixaTableBody').innerHTML = rendaFixaHtml;
+
+            calculateMetaQuantities();
+        }
+
+        // Window onload initialization
+        window.onload = function() {
+            if (!loadFromLocalStorage()) {
+                calculateAccumulation();
+                renderPortfolio();
+                calculateMetaQuantities();
+                calculateRetirement();
+            } else {
+                calculateAccumulation();
+                renderPortfolio();
+                calculateMetaQuantities();
+                calculateRetirement();
+            }
+        };
+    </script>
+</body>
+</html>
